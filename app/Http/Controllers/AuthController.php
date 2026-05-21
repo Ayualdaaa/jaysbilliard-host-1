@@ -157,6 +157,9 @@ class AuthController extends Controller
             }
 
             Auth::login($user);
+            if ($user->role === 'admin') {
+                return redirect()->intended(route('admin.dashboard'));
+            }
             return redirect()->intended(route('dashboard'));
 
         } catch (\Exception $e) {
