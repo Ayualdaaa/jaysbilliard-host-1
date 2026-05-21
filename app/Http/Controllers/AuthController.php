@@ -125,9 +125,11 @@ class AuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
             
-            $user = User::where('google_id', $googleUser->id)
-                        ->orWhere('email', $googleUser->email)
-                        ->first();
+            $query = User::where('google_id', $googleUser->id);
+            if (!empty($googleUser->email)) {
+                $query->orWhere('email', $googleUser->email);
+            }
+            $user = $query->first();
 
             if (!$user) {
                 // Create new user
@@ -141,9 +143,16 @@ class AuthController extends Controller
                     'google_id' => $googleUser->id,
                 ]);
             } else {
-                // Update google_id if not set
+                // Update google_id and email if not set
+                $updates = [];
                 if (!$user->google_id) {
-                    $user->update(['google_id' => $googleUser->id]);
+                    $updates['google_id'] = $googleUser->id;
+                }
+                if (!$user->email && $googleUser->email) {
+                    $updates['email'] = $googleUser->email;
+                }
+                if (!empty($updates)) {
+                    $user->update($updates);
                 }
             }
 
@@ -152,7 +161,7 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->route('login')->withErrors([
-                'error' => 'Gagal login dengan Google: ' . $e->getMessage()
+                'username' => 'Gagal login dengan Google: ' . $e->getMessage()
             ]);
         }
     }

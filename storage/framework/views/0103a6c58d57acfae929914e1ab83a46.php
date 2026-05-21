@@ -5,23 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up — Jay's Billiard</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 </head>
 
 <body>
     <div class="relative flex items-center justify-center min-h-screen p-8 md:p-6 sm:p-4">
-        {{-- Background --}}
+        
         <div class="fixed inset-0 z-0">
-            <img src="{{ asset('images/login-bg.png') }}" alt="Background" class="w-full h-full object-cover" />
+            <img src="<?php echo e(asset('images/login-bg.png')); ?>" alt="Background" class="w-full h-full object-cover" />
             <div class="absolute inset-0 bg-black/65 backdrop-blur-sm"></div>
         </div>
 
-        {{-- Sign Up Card --}}
+        
         <div
             class="relative z-10 w-full max-w-md bg-[#0f141e]/85 backdrop-blur-custom border border-primary/15 rounded-2xl p-10 md:p-8 sm:p-7 shadow-2xl">
-            <a href="{{ url('/') }}"
+            <a href="<?php echo e(url('/')); ?>"
                 class="flex items-center justify-center w-10 h-10 bg-white/5 border border-primary/20 rounded-lg text-white/40 mb-6 transition-all hover:bg-primary/10 hover:text-primary hover:border-primary/40 hover:-translate-x-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -33,18 +33,18 @@
             <p class="text-white/50 text-sm leading-relaxed mb-8">Dengan membuat akun pemesanan di jay's billiard tegal,
                 anda dapat mulai bisa memesan</p>
 
-            @if($errors->any())
+            <?php if($errors->any()): ?>
                 <div class="bg-red-500/15 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
-                    @foreach($errors->all() as $error)
-                        <p class="text-red-400 text-sm m-0 leading-relaxed">{{ $error }}</p>
-                    @endforeach
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <p class="text-red-400 text-sm m-0 leading-relaxed"><?php echo e($error); ?></p>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            <form action="{{ route('register') }}" method="POST" class="flex flex-col gap-5">
-                @csrf
+            <form action="<?php echo e(route('register')); ?>" method="POST" class="flex flex-col gap-5">
+                <?php echo csrf_field(); ?>
 
-                {{-- Nama Lengkap --}}
+                
                 <div class="flex flex-col gap-2">
                     <label class="text-sm font-semibold text-white">Nama Lengkap</label>
                     <div
@@ -59,11 +59,11 @@
                         </span>
                         <input type="text" name="name"
                             class="flex-1 bg-transparent border-none outline-none text-white text-sm py-3.5 placeholder:text-white/30"
-                            placeholder="Masukkan nama lengkap anda" value="{{ old('name') }}" required>
+                            placeholder="Masukkan nama lengkap anda" value="<?php echo e(old('name')); ?>" required>
                     </div>
                 </div>
 
-                {{-- Username --}}
+                
                 <div class="flex flex-col gap-2">
                     <label class="text-sm font-semibold text-white">Username</label>
                     <div
@@ -78,12 +78,12 @@
                         </span>
                         <input type="text" name="username"
                             class="flex-1 bg-transparent border-none outline-none text-white text-sm py-3.5 placeholder:text-white/30"
-                            placeholder="Masukkan username anda" value="{{ old('username') }}" required>
+                            placeholder="Masukkan username anda" value="<?php echo e(old('username')); ?>" required>
                     </div>
                 </div>
 
 
-                {{-- Nomor HP --}}
+                
                 <div class="flex flex-col gap-2">
                     <label class="text-sm font-semibold text-white">Nomor HP</label>
                     <div
@@ -98,11 +98,11 @@
                         </span>
                         <input type="text" name="phone"
                             class="flex-1 bg-transparent border-none outline-none text-white text-sm py-3.5 placeholder:text-white/30"
-                            placeholder="Masukkan nomor HP anda" value="{{ old('phone') }}" required>
+                            placeholder="Masukkan nomor HP anda" value="<?php echo e(old('phone')); ?>" required>
                     </div>
                 </div>
 
-                {{-- Kata Sandi --}}
+                
                 <div class="flex flex-col gap-2">
                     <label class="text-sm font-semibold text-white">Kata Sandi</label>
                     <div
@@ -131,7 +131,7 @@
                     </div>
                 </div>
 
-                {{-- Remember & Forgot --}}
+                
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-2">
                     <label class="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
                         <input type="checkbox" name="remember" class="w-4 h-4 accent-primary cursor-pointer">
@@ -141,7 +141,7 @@
                         Sandi?</a>
                 </div>
 
-                {{-- Submit --}}
+                
                 <button type="submit"
                     class="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary to-primary-dark text-black font-bold text-base px-4 py-3.5 rounded-xl border-none cursor-pointer transition-all hover:shadow-neon hover:-translate-y-0.5">
                     <span>Register</span>
@@ -160,8 +160,8 @@
                 <div class="flex-grow border-t border-white/10"></div>
             </div>
 
-            <a href="{{ route('google.login') }}" class="flex items-center justify-center gap-3 w-full bg-white/5 border border-white/10 hover:border-white/20 text-white font-semibold text-sm px-4 py-3.5 rounded-xl cursor-pointer transition-all hover:bg-white/10 hover:-translate-y-0.5">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <a href="<?php echo e(route('google.login')); ?>" class="flex items-center justify-center gap-3 w-full bg-white/5 border border-white/10 hover:border-white/20 text-white font-semibold text-sm px-4 py-3.5 rounded-xl cursor-pointer transition-all hover:bg-white/10 hover:-translate-y-0.5">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
@@ -171,7 +171,7 @@
             </a>
 
             <p class="text-center text-sm text-white/50 mt-6">
-                Sudah punya akun? <a href="{{ route('login') }}"
+                Sudah punya akun? <a href="<?php echo e(route('login')); ?>"
                     class="text-primary font-semibold transition-opacity hover:opacity-80">Log in</a>
             </p>
         </div>
@@ -192,4 +192,4 @@
     </script>
 </body>
 
-</html>
+</html><?php /**PATH C:\laragon\www\jaysbilliard-main\resources\views/autentikasi/register.blade.php ENDPATH**/ ?>
