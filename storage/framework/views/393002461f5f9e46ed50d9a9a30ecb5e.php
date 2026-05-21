@@ -29,6 +29,12 @@
                 </div>
             <?php endif; ?>
 
+            <?php if(session('error')): ?>
+                <div class="bg-red-500/15 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
+                    <p class="text-red-400 text-sm m-0 leading-relaxed"><?php echo e(session('error')); ?></p>
+                </div>
+            <?php endif; ?>
+
             <?php if($errors->any()): ?>
                 <div class="bg-red-500/15 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
                     <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
