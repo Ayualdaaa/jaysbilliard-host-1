@@ -368,6 +368,14 @@
             // Tables and Bookings data from PHP for dynamic map updates
             const allTables = @json($tables);
 
+            function timeToFloat(timeStr) {
+                if (!timeStr) return 0;
+                const parts = timeStr.split(':');
+                const hours = parseInt(parts[0]) || 0;
+                const minutes = parseInt(parts[1]) || 0;
+                return hours + (minutes / 60);
+            }
+
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
             function renderMonthPicker() {
@@ -432,7 +440,10 @@
                     const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
                     const dayName = date.toLocaleDateString('id-ID', { weekday: 'short' }).toUpperCase();
                     const dayNum = date.getDate();
-                    const fullDate = date.toISOString().split('T')[0];
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const fullDate = `${year}-${month}-${day}`;
 
                     const card = document.createElement('div');
                     card.className = `date-card ${isSelected ? 'active' : ''}`;
@@ -479,9 +490,8 @@
 
                     // Additional disabling (already booked for any of the selected tables)
                     if (selectedDate && !isDisabled && selectedTables.length > 0) {
-                        // Format current slot time as HH:mm:ss for comparison
-                        const currentHour = dataHour >= 24 ? dataHour - 24 : dataHour;
-                        const slotStartTime = String(currentHour).padStart(2, '0') + ':00:00';
+                        const slotStart = dataHour;
+                        const slotEnd = dataHour + 1;
                         
                         const isBooked = selectedTables.some(selected => {
                             const tableData = allTables.find(t => t.id == selected.id);
@@ -490,9 +500,10 @@
                             return tableData.bookings.some(b => {
                                 if (b.booking_date !== selectedDateStr) return false;
                                 
-                                // Check if slot falls within booking period
-                                // Note: b.start_time and b.end_time are in HH:mm:ss format
-                                return slotStartTime >= b.start_time && slotStartTime < b.end_time;
+                                const bStart = timeToFloat(b.start_time);
+                                const bEnd = timeToFloat(b.end_time);
+                                
+                                return slotStart < bEnd && slotEnd > bStart;
                             });
                         });
                         
@@ -507,6 +518,7 @@
                     }
                 });
                 updateTimeSummary();
+                updateMapStatus(); // Automatically refresh map to match new slot states
             }
 
             function updateSummaryDate() {
@@ -525,6 +537,16 @@
                 const day = String(checkDate.getDate()).padStart(2, '0');
                 const selectedDateStr = `${year}-${month}-${day}`;
 
+                // Get selected time slot and duration
+                const activeTimeSlot = document.querySelector('.time-slot.active');
+                let selectedStartHour = null;
+                let selectedEndHour = null;
+                if (activeTimeSlot) {
+                    selectedStartHour = parseInt(activeTimeSlot.dataset.hour);
+                    const duration = durationSelected ? parseInt(rangeSlider.value) : 1;
+                    selectedEndHour = selectedStartHour + duration;
+                }
+
                 allTables.forEach(table => {
                     const tableIdStr = table.id.toString().padStart(2, '0');
                     const tableEl = document.getElementById(`meja-${tableIdStr}`);
@@ -537,13 +559,38 @@
                         statusClass = 'maintenance';
                         statusText = 'MAINTENANCE';
                     } else {
-                        // Find if any booking exists for this table on selected date
-                        const booking = table.bookings.find(b => b.booking_date === selectedDateStr);
-                        if (booking) {
-                            if (booking.status === 'confirmed') {
+                        // Find overlapping bookings for this table on selected date and selected timeslot
+                        const overlappingBooking = table.bookings.find(b => {
+                            if (b.booking_date !== selectedDateStr) return false;
+                            
+                            // If no timeslot is selected yet, we default to checking if currently occupied right now (if date is today)
+                            if (selectedStartHour === null) {
+                                const localDate = new Date();
+                                const y = localDate.getFullYear();
+                                const m = String(localDate.getMonth() + 1).padStart(2, '0');
+                                const d = String(localDate.getDate()).padStart(2, '0');
+                                const todayStr = `${y}-${m}-${d}`;
+                                
+                                if (selectedDateStr === todayStr) {
+                                    const nowHour = localDate.getHours() + (localDate.getMinutes() / 60);
+                                    const bStart = timeToFloat(b.start_time);
+                                    const bEnd = timeToFloat(b.end_time);
+                                    return nowHour >= bStart && nowHour < bEnd;
+                                }
+                                return false;
+                            }
+
+                            // If a slot is selected, check for interval overlap
+                            const bStart = timeToFloat(b.start_time);
+                            const bEnd = timeToFloat(b.end_time);
+                            return selectedStartHour < bEnd && selectedEndHour > bStart;
+                        });
+
+                        if (overlappingBooking) {
+                            if (overlappingBooking.status === 'confirmed') {
                                 statusClass = 'occupied';
                                 statusText = 'TERISI';
-                            } else if (['pending', 'booked', 'dipesan'].includes(booking.status)) {
+                            } else if (['pending', 'booked', 'dipesan'].includes(overlappingBooking.status)) {
                                 statusClass = 'booked';
                                 statusText = 'DIPESAN';
                             }
@@ -652,6 +699,8 @@
                         if (mapTable) mapTable.classList.remove('selected');
 
                         updateSelectedTablesList();
+                        updateTimeSlots();
+                        updateMapStatus();
                     });
                 });
 
@@ -722,8 +771,7 @@
                         return;
                     }
 
-                    // Note: 'booked' or 'occupied' status doesn't block selection anymore, 
-                    // because the table might be free for a different time slot.
+
 
                     // Current behavior: Hover opens popup, click selection toggle
                     const id = table.dataset.id;
@@ -954,6 +1002,7 @@
                     slot.classList.add('active');
                     updateTimeSummary();
                     updateSelectedTablesList();
+                    updateMapStatus(); // Refresh map statuses for the newly selected hour
                 });
             });
 
@@ -965,6 +1014,7 @@
                 document.getElementById('summary-duration').innerText = val + ' Jam';
                 updateTimeSummary();
                 updateSelectedTablesList();
+                updateMapStatus(); // Refresh map statuses for updated duration window
             });
 
             function updateTimeSummary() {
@@ -1058,6 +1108,43 @@
 
                     if (!durationSelected) {
                         Swal.fire({ icon: 'warning', title: 'Durasi Belum Dipilih', text: 'Silakan tentukan durasi main dulu.', background: '#0f1115', color: '#fff' });
+                        return;
+                    }
+
+                    // Client-side Overlap Conflict Verification
+                    const selectedStartHour = parseInt(activeTimeSlot.dataset.hour);
+                    const duration = parseInt(rangeSlider.value);
+                    const selectedEndHour = selectedStartHour + duration;
+                    const selectedDateStr = orderData.isoDate;
+
+                    let hasOverlapConflict = false;
+                    let conflictingTable = '';
+
+                    selectedTables.forEach(selected => {
+                        const tableData = allTables.find(t => t.id == selected.id);
+                        if (!tableData || !tableData.bookings) return;
+
+                        tableData.bookings.forEach(b => {
+                            if (b.booking_date !== selectedDateStr) return;
+
+                            const bStart = timeToFloat(b.start_time);
+                            const bEnd = timeToFloat(b.end_time);
+
+                            if (selectedStartHour < bEnd && selectedEndHour > bStart) {
+                                hasOverlapConflict = true;
+                                conflictingTable = tableData.name;
+                            }
+                        });
+                    });
+
+                    if (hasOverlapConflict) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Jadwal Bentrok',
+                            text: `Meja ${conflictingTable} sudah dipesan pada slot jam tersebut. Silakan pilih waktu bermain atau meja lain.`,
+                            background: '#0f1115',
+                            color: '#fff'
+                        });
                         return;
                     }
 

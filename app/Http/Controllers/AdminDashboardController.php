@@ -116,15 +116,19 @@ class AdminDashboardController extends Controller
     public function confirmBooking($id)
     {
         $booking = \App\Models\Booking::findOrFail($id);
-        // Only confirm if status is 'booked' (paid, awaiting admin confirmation)
-        if ($booking->status === 'booked') {
+        // Allow confirming if status is booked, pending, dipesan, paid, or lunas
+        if (in_array(strtolower($booking->status), ['booked', 'pending', 'dipesan', 'paid', 'lunas'])) {
             try {
+                // Calculate the duration from original start/end times in Asia/Jakarta timezone
                 $start = \Carbon\Carbon::parse($booking->start_time);
                 $end = \Carbon\Carbon::parse($booking->end_time);
                 $durationInMinutes = $start->diffInMinutes($end);
                 
-                $now = now();
+                // Get current local time in Jakarta
+                $now = \Carbon\Carbon::now('Asia/Jakarta');
+                
                 $booking->status = 'confirmed';
+                $booking->booking_date = $now->toDateString();
                 $booking->start_time = $now->format('H:i:s');
                 $booking->end_time = $now->addMinutes($durationInMinutes)->format('H:i:s');
                 $booking->save();
@@ -141,8 +145,8 @@ class AdminDashboardController extends Controller
     public function cancelBooking($id)
     {
         $booking = \App\Models\Booking::findOrFail($id);
-        // Only cancel if status is 'booked' or 'pending'
-        if (in_array($booking->status, ['booked', 'pending'])) {
+        // Allow cancelling if status is booked, pending, dipesan, paid, or lunas
+        if (in_array(strtolower($booking->status), ['booked', 'pending', 'dipesan', 'paid', 'lunas'])) {
             $booking->status = 'cancelled';
             $booking->save();
         }
@@ -179,7 +183,29 @@ class AdminDashboardController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $booking = \App\Models\Booking::findOrFail($id);
-        $booking->status = $request->status;
+        $newStatus = strtolower($request->status);
+        
+        if ($newStatus === 'confirmed') {
+            try {
+                // Calculate the duration from original start/end times in Asia/Jakarta timezone
+                $start = \Carbon\Carbon::parse($booking->start_time);
+                $end = \Carbon\Carbon::parse($booking->end_time);
+                $durationInMinutes = $start->diffInMinutes($end);
+                
+                // Get current local time in Jakarta
+                $now = \Carbon\Carbon::now('Asia/Jakarta');
+                
+                $booking->status = 'confirmed';
+                $booking->booking_date = $now->toDateString();
+                $booking->start_time = $now->format('H:i:s');
+                $booking->end_time = $now->addMinutes($durationInMinutes)->format('H:i:s');
+            } catch (\Exception $e) {
+                $booking->status = 'confirmed';
+            }
+        } else {
+            $booking->status = $request->status;
+        }
+        
         $booking->save();
 
         return back()->with('success', 'Status pemesanan berhasil diperbarui menjadi ' . $request->status);
@@ -195,5 +221,45 @@ class AdminDashboardController extends Controller
         }
         
         return view('dashboard_admin.profile_settings', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Silakan login terlebih dahulu.'], 401);
+        }
+
+        // Determine if updating password or personal info
+        if ($request->has('current_password') || $request->has('new_password')) {
+            $request->validate([
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:6',
+            ]);
+
+            if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+                return response()->json(['success' => false, 'message' => 'Kata sandi saat ini salah.'], 422);
+            }
+
+            $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'Kata sandi berhasil diperbarui.']);
+        } else {
+            $request->validate([
+                'full_name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+                'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+                'phone' => 'required|string|max:20',
+            ]);
+
+            $user->name = $request->full_name;
+            $user->username = $request->username;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'Profil berhasil diperbarui.']);
+        }
     }
 }

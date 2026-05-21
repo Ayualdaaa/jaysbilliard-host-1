@@ -20,7 +20,9 @@
          * Global Avatar Loader
          */
         function loadGlobalAvatar() {
-            const savedAvatar = localStorage.getItem('admin_avatar');
+            const isAdmin = {{ auth()->check() && auth()->user()->role === 'admin' ? 'true' : 'false' }};
+            const avatarKey = isAdmin ? 'admin_avatar' : 'user_avatar';
+            const savedAvatar = localStorage.getItem(avatarKey);
             if (savedAvatar) {
                 const avatars = document.querySelectorAll('.adm-user-avatar, .ps-avatar-circle');
                 avatars.forEach(avatar => {
@@ -45,7 +47,7 @@
         {{-- Main Content --}}
         <main class="adm-main">
             {{-- Top Bar --}}
-            @if(!Route::is('admin.profile'))
+            @if(!Route::is('admin.profile') && !Route::is('user.profile'))
                 @include('component.c_dashboard.topbar.topbar', [
                     'topbar_title' => $topbar_title ?? 'Dashboard',
                     'topbar_sub' => $topbar_sub ?? "Kelola kebutuhan operasional jay's billiard"

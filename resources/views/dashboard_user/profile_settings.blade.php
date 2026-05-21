@@ -10,15 +10,14 @@
         {{-- Page Header --}}
         <div class="ps-header-section">
             <h1 class="ps-page-title">Profile Settings</h1>
-            <p class="ps-page-subtitle">Kelola profil administratif, kredensial keamanan, dan preferensi notifikasi sistem
-                Anda dari satu pusat kendali.</p>
+            <p class="ps-page-subtitle">Kelola profil pribadi, kata sandi, dan preferensi akun Anda dari satu tempat.</p>
         </div>
 
         {{-- Avatar Card --}}
         <div class="ps-avatar-card">
             <div class="ps-avatar-card-inner">
                 <div class="ps-avatar-left">
-                    <div class="ps-avatar-circle" id="psAvatarCircle">{{ strtoupper(substr($user->name ?? 'A', 0, 1)) }}</div>
+                    <div class="ps-avatar-circle" id="psAvatarCircle">{{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}</div>
                     {{-- Hidden File Input --}}
                     <input type="file" id="psAvatarInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
                     
@@ -29,9 +28,9 @@
                 </div>
                 <div class="ps-avatar-center">
                     <h2 class="ps-user-name">{{ $user->name ?? 'User' }}</h2>
-                    <p class="ps-user-meta">{{ ucfirst($user->role ?? 'User') }} <span class="ps-dot">•</span> Join Tahun {{ date('Y', strtotime($user->created_at ?? now())) }}</p>
+                    <p class="ps-user-meta">{{ ucfirst($user->role ?? 'User') }} <span class="ps-dot">•</span> Anggota Sejak {{ date('Y', strtotime($user->created_at ?? now())) }}</p>
                     <div class="ps-avatar-actions">
-                        <button class="btn-ps-upload" onclick="document.getElementById('psAvatarInput').click()">Upload New Photo</button>
+                        <button class="btn-ps-cyan" onclick="document.getElementById('psAvatarInput').click()">Upload New Photo</button>
                         <button class="btn-ps-remove" onclick="removePhoto()">Remove</button>
                     </div>
                 </div>
@@ -76,7 +75,7 @@
 
             {{-- Keamanan & Kata Sandi --}}
             <div class="ps-form-card">
-                <h3 class="ps-card-title">Kemanan & Kata Sandi</h3>
+                <h3 class="ps-card-title">Keamanan & Kata Sandi</h3>
                 <form id="securityForm" class="ps-form">
                     <div class="ps-form-group">
                         <label>Kata Sandi Saat Ini</label>
@@ -117,7 +116,7 @@
          * Load foto dari localStorage
          */
         function loadStoredAvatar() {
-            const savedAvatar = localStorage.getItem('admin_avatar');
+            const savedAvatar = localStorage.getItem('user_avatar');
             const circles = document.querySelectorAll('.ps-avatar-circle, .adm-user-avatar');
             
             if (savedAvatar) {
@@ -151,9 +150,9 @@
                 const dataUrl = e.target.result;
                 
                 // Simpan ke localStorage agar tidak hilang saat reload
-                localStorage.setItem('admin_avatar', dataUrl);
+                localStorage.setItem('user_avatar', dataUrl);
                 
-                // Update semua avatar di halaman (termasuk topbar/dropdown jika ada)
+                // Update semua avatar di halaman
                 loadStoredAvatar();
             }
             reader.readAsDataURL(file);
@@ -163,9 +162,9 @@
          * Reset foto profil ke inisial
          */
         function removePhoto() {
-            localStorage.removeItem('admin_avatar');
+            localStorage.removeItem('user_avatar');
             const circles = document.querySelectorAll('.ps-avatar-circle, .adm-user-avatar');
-            const userInitial = '{{ strtoupper(substr($user->name ?? "A", 0, 1)) }}';
+            const userInitial = '{{ strtoupper(substr($user->name ?? "U", 0, 1)) }}';
             
             circles.forEach(circle => {
                 circle.innerHTML = userInitial;
@@ -219,7 +218,7 @@
             formData.append('_token', '{{ csrf_token() }}');
 
             // Send AJAX
-            fetch('{{ route("admin.profile.update") }}', {
+            fetch('{{ route("user.profile.update") }}', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json'
@@ -315,7 +314,7 @@
                 const formData1 = new FormData(form1);
                 formData1.append('_token', '{{ csrf_token() }}');
                 
-                const response1 = await fetch('{{ route("admin.profile.update") }}', {
+                const response1 = await fetch('{{ route("user.profile.update") }}', {
                     method: 'POST',
                     headers: { 'Accept': 'application/json' },
                     body: formData1
@@ -351,7 +350,7 @@
                     const formData2 = new FormData(form2);
                     formData2.append('_token', '{{ csrf_token() }}');
 
-                    const response2 = await fetch('{{ route("admin.profile.update") }}', {
+                    const response2 = await fetch('{{ route("user.profile.update") }}', {
                         method: 'POST',
                         headers: { 'Accept': 'application/json' },
                         body: formData2
@@ -394,7 +393,7 @@
         }
 
         /**
-         * Feedback untuk toggle (bonus interactivity)
+         * Feedback untuk toggle
          */
         function toggleNotification(checkbox) {
             const status = checkbox.checked ? 'diaktifkan' : 'dinonaktifkan';
@@ -512,7 +511,7 @@
             gap: 0.75rem;
         }
 
-        .btn-ps-upload {
+        .btn-ps-cyan {
             background: #00e5ff;
             color: #0c0e14;
             border: none;
@@ -640,18 +639,6 @@
             margin-top: 1rem;
         }
 
-        .btn-ps-cyan {
-            background: #00e5ff;
-            color: #0c0e14;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 0.6rem;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            width: fit-content;
-        }
-
         /* Bottom Actions */
         .ps-bottom-actions {
             display: flex;
@@ -676,7 +663,7 @@
             }
         }
 
-        /* Swall Custom Overrides */
+        /* Swal Custom Overrides */
         .swal2-popup {
             border-radius: 1.5rem !important;
             border: 1px solid rgba(255, 255, 255, 0.08) !important;

@@ -74,6 +74,7 @@ Route::middleware('admin')->group(function () {
     
     // Admin Profile & Stock
     Route::get('/admin/profile', [AdminDashboardController::class, 'profile'])->name('admin.profile');
+    Route::post('/admin/profile', [AdminDashboardController::class, 'updateProfile'])->name('admin.profile.update');
     Route::get('/admin/stock', [StockController::class, 'index'])->name('admin.stock.index');
     Route::post('/admin/stock', [StockController::class, 'store'])->name('admin.stock.store');
     Route::get('/admin/stock/export', [StockController::class, 'exportPdf'])->name('admin.stock.export');
@@ -83,6 +84,8 @@ Route::middleware('admin')->group(function () {
 Route::middleware('user')->group(function () {
     // Dashboard User
     Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
+    Route::get('/dashboard/profile', [DashboardController::class, 'profile'])->name('user.profile');
+    Route::post('/dashboard/profile', [DashboardController::class, 'updateProfile'])->name('user.profile.update');
     Route::get('/dashboard/meja', [DashboardController::class, 'meja'])->name('user.meja');
     Route::get('/dashboard/meja/konfirmasi', [DashboardController::class, 'konfirmasi'])->name('user.meja.konfirmasi');
     Route::get('/dashboard/fnb', [DashboardController::class, 'fnb'])->name('user.fnb');

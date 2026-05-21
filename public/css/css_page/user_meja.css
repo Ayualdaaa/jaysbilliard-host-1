@@ -1456,3 +1456,15 @@
         font-size: 0.75rem;
     }
 }
+
+/* Disabled Time Slots */
+.time-slot.disabled {
+    opacity: 0.25 !important;
+    background: rgba(255, 255, 255, 0.01) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.15) !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    box-shadow: none !important;
+    filter: grayscale(100%);
+}

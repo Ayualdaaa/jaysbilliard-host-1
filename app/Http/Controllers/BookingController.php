@@ -41,6 +41,27 @@ class BookingController extends Controller
             'total_price' => 'required|numeric',
         ]);
 
+        // Check for time overlaps for each selected table
+        foreach ($validated['table_ids'] as $table_id) {
+            $overlap = Booking::where('table_id', $table_id)
+                ->where('booking_date', $validated['booking_date'])
+                ->whereIn('status', ['pending', 'booked', 'dipesan', 'confirmed', 'paid', 'lunas'])
+                ->where(function ($query) use ($validated) {
+                    $query->where('start_time', '<', $validated['end_time'])
+                          ->where('end_time', '>', $validated['start_time']);
+                })
+                ->exists();
+
+            if ($overlap) {
+                $table = Table::find($table_id);
+                $tableName = $table ? $table->name : 'Meja';
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Meja ' . $tableName . ' sudah dipesan pada tanggal dan jam tersebut. Silakan pilih meja atau waktu lain.'
+                ], 422);
+            }
+        }
+
         $bookings = [];
         foreach ($validated['table_ids'] as $table_id) {
             $booking = Booking::create([

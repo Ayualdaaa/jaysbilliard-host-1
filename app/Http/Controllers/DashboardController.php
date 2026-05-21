@@ -135,13 +135,35 @@ class DashboardController extends Controller
         $tax = (int) round($subtotal * 0.1);
         $total = $subtotal + $tax;
 
-        // Find active booking for the table (if any)
+        // Find active or scheduled booking for the table and user to associate the F&B order
         $bookingId = null;
         if ($validated['table_id']) {
+            $todayStr = \Carbon\Carbon::now('Asia/Jakarta')->toDateString();
+            
+            // 1. Try to find an active confirmed booking playing right now on this table
             $activeBooking = Booking::where('table_id', $validated['table_id'])
-                                    ->where('booking_date', now()->toDateString())
+                                    ->where('booking_date', $todayStr)
                                     ->where('status', 'confirmed')
                                     ->first();
+                                    
+            // 2. If not found, try to find any active/upcoming booking by this user on this table today
+            if (!$activeBooking) {
+                $activeBooking = Booking::where('table_id', $validated['table_id'])
+                                        ->where('user_id', auth()->id())
+                                        ->where('booking_date', $todayStr)
+                                        ->whereIn('status', ['confirmed', 'booked', 'pending', 'dipesan', 'paid', 'lunas'])
+                                        ->first();
+            }
+            
+            // 3. If still not found, fallback to the user's closest booking on this table (historical or future)
+            if (!$activeBooking) {
+                $activeBooking = Booking::where('table_id', $validated['table_id'])
+                                        ->where('user_id', auth()->id())
+                                        ->whereIn('status', ['confirmed', 'booked', 'pending', 'dipesan', 'paid', 'lunas'])
+                                        ->orderByRaw("ABS(TIMESTAMPDIFF(SECOND, created_at, NOW()))")
+                                        ->first();
+            }
+            
             $bookingId = $activeBooking ? $activeBooking->id : null;
         }
 
@@ -253,10 +275,72 @@ class DashboardController extends Controller
                             ->orderBy('booking_date', 'desc')
                             ->orderBy('start_time', 'desc')
                             ->get();
+                            
+        $fnbOrders = \App\Models\Order::whereHas('booking', function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                  ->orWhere('customer_name', $user->name);
+        })
+        ->with(['details.menu', 'booking.table'])
+        ->orderBy('created_at', 'desc')
+        ->get();
         
         $topbar_title = "Riwayat Pesanan";
         $topbar_sub = "Lihat daftar pesanan dan riwayat bermain Anda";
 
-        return view('dashboard_user.history', compact('user', 'bookings', 'topbar_title', 'topbar_sub'));
+        return view('dashboard_user.history', compact('user', 'bookings', 'fnbOrders', 'topbar_title', 'topbar_sub'));
+    }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Set topbar parameters
+        $topbar_title = "Profile Settings";
+        $topbar_sub = "Kelola data profil dan setelan keamanan akun Anda";
+
+        return view('dashboard_user.profile_settings', compact('user', 'topbar_title', 'topbar_sub'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Silakan login terlebih dahulu.'], 401);
+        }
+
+        // Determine if updating password or personal info
+        if ($request->has('current_password') || $request->has('new_password')) {
+            $request->validate([
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:6',
+            ]);
+
+            if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+                return response()->json(['success' => false, 'message' => 'Kata sandi saat ini salah.'], 422);
+            }
+
+            $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'Kata sandi berhasil diperbarui.']);
+        } else {
+            $request->validate([
+                'full_name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+                'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+                'phone' => 'required|string|max:20',
+            ]);
+
+            $user->name = $request->full_name;
+            $user->username = $request->username;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'Profil berhasil diperbarui.']);
+        }
     }
 }

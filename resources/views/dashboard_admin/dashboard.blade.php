@@ -149,10 +149,10 @@
                                 if ($activeBooking && $activeBooking->status === 'confirmed') {
                                     try {
                                         $baseDate = \Carbon\Carbon::parse($activeBooking->booking_date)->format('Y-m-d');
-                                        $start = \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->start_time);
-                                        $end = \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time);
+                                        $start = \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->start_time, 'Asia/Jakarta');
+                                        $end = \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time, 'Asia/Jakarta');
                                         if ($end->lt($start)) { $end->addDay(); }
-                                        $now = \Carbon\Carbon::now();
+                                        $now = \Carbon\Carbon::now('Asia/Jakarta');
                                         
                                         if ($now->gt($start)) {
                                             $diff = $start->diff($now);
@@ -194,20 +194,13 @@
                                                     <span class="adm-label">PEMAIN</span>
                                                     <span class="adm-value" style="color: #00d1ff;">{{ $activeBooking->customer_name }}</span>
                                                 </div>
-                                                <div class="adm-timer-container">
-                                                    <div class="adm-timer-group">
+                                                <div class="adm-timer-container" style="justify-content: center; width: 100%; display: flex;">
+                                                    <div class="adm-timer-group" style="width: 100%; text-align: center;">
                                                         <span class="adm-timer-label">SISA WAKTU</span>
-                                                        <div class="adm-timer-display timer-remaining" 
-                                                             data-end="{{ \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time)->lt(\Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->start_time)) ? \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time)->addDay()->toIso8601String() : \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time)->toIso8601String() }}">
+                                                        <div class="adm-timer-display timer-remaining" style="font-size: 1.75rem; font-weight: 800; color: #00d1ff;" 
+                                                             data-id="{{ $activeBooking->id }}"
+                                                             data-end="{{ \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time, 'Asia/Jakarta')->lt(\Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->start_time, 'Asia/Jakarta')) ? \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time, 'Asia/Jakarta')->addDay()->toIso8601String() : \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time, 'Asia/Jakarta')->toIso8601String() }}">
                                                              {{ $remainingTime }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="adm-timer-group">
-                                                        <span class="adm-timer-label">WAKTU BERLALU</span>
-                                                        <div class="adm-timer-display timer-elapsed" 
-                                                             data-start="{{ \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->start_time)->toIso8601String() }}"
-                                                             data-duration="{{ \Carbon\Carbon::parse($activeBooking->start_time)->diffInSeconds(\Carbon\Carbon::parse($activeBooking->end_time)) }}">
-                                                             {{ $elapsedTime }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -333,32 +326,10 @@
         function updateTimers() {
             const now = new Date();
 
-            // Update Elapsed Timers (Capped at Duration)
-            document.querySelectorAll('.timer-elapsed').forEach(el => {
-                const startStr = el.dataset.start;
-                const durationSeconds = parseInt(el.dataset.duration);
-                if (!startStr || isNaN(durationSeconds)) return;
-
-                const startTime = new Date(startStr);
-                if (isNaN(startTime.getTime())) return;
-
-                let diffMs = now - startTime;
-                let diffSeconds = Math.floor(diffMs / 1000);
-
-                // Cap at duration
-                if (diffSeconds > durationSeconds) {
-                    diffSeconds = durationSeconds;
-                    el.style.color = "#8a8a98";
-                }
-
-                if (diffSeconds >= 0) {
-                    el.textContent = formatSeconds(diffSeconds);
-                }
-            });
-
             // Update Remaining Timers
             document.querySelectorAll('.timer-remaining').forEach(el => {
                 const endStr = el.dataset.end;
+                const bookingId = el.dataset.id;
                 if (!endStr) return;
 
                 const endTime = new Date(endStr);
@@ -370,6 +341,15 @@
                 } else {
                     el.textContent = "00:00:00";
                     el.style.color = "#ff3b3b";
+
+                    // Auto end session when remaining time is up
+                    if (bookingId && !el.dataset.ended) {
+                        el.dataset.ended = "true"; // Prevent duplicate submissions
+                        const form = document.getElementById(`end-session-form-${bookingId}`);
+                        if (form) {
+                            form.submit();
+                        }
+                    }
                 }
             });
         }
