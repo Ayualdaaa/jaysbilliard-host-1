@@ -100,4 +100,309 @@
         localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
     });
 </script>
-<script src="<?php echo e(asset('js/js_component/mobile_menu.js')); ?>"></script><?php /**PATH C:\laragon\www\jaysbilliard-main\resources\views/component/c_dashboard/sidebar/sidebar_user.blade.php ENDPATH**/ ?>
+<script src="<?php echo e(asset('js/js_component/mobile_menu.js')); ?>"></script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let notifiedKeys = [];
+        const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+
+        // Format date for notification display
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const options = { day: 'numeric', month: 'short' };
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        function checkUserNotifications() {
+            fetch('<?php echo e(route("user.notifications.check")); ?>')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success || !data.notifications || data.notifications.length === 0) {
+                        return;
+                    }
+
+                    // Get read keys from localStorage
+                    let readKeys = [];
+                    try {
+                        readKeys = JSON.parse(localStorage.getItem('user_read_notification_keys')) || [];
+                    } catch(e) {
+                        readKeys = [];
+                    }
+                    
+                    let unreadCount = 0;
+                    const notifContent = document.getElementById('notifListContent');
+                    const badge = document.getElementById('notif-badge-count');
+
+                    if (notifContent) {
+                        notifContent.innerHTML = ''; // Clear empty state
+                    }
+
+                    let playSound = false;
+                    let newlyUpdatedNotifs = [];
+
+                    // Track all keys fetched in this check
+                    let currentKeys = [];
+
+                    data.notifications.forEach(n => {
+                        let key = `${n.type}-${n.id}-${n.status}`;
+                        currentKeys.push(key);
+
+                        let isUnread = !readKeys.includes(key);
+
+                        if (isUnread) {
+                            unreadCount++;
+                        }
+
+                        // Check if we should notify (sound/toast)
+                        // We notify if it is unread AND we haven't played a sound for this key in the current session
+                        if (isUnread && !notifiedKeys.includes(key)) {
+                            notifiedKeys.push(key);
+                            
+                            // Only trigger toast/sound for items updated in the last 1 minute or if this isn't the initial session load
+                            // to avoid spamming the user on page refresh.
+                            let itemTime = new Date(n.updated_at);
+                            let isRecent = (new Date() - itemTime) < 60000;
+                            if (isRecent || notifiedKeys.length > 1) { 
+                                newlyUpdatedNotifs.push(n);
+                                playSound = true;
+                            }
+                        }
+
+                        // Build UI elements
+                        let title = '';
+                        let description = '';
+                        let statusColor = '';
+                        let iconSvg = '';
+                        let dotIndicator = isUnread ? `<span class="unread-dot" style="width: 8px; height: 8px; background: ${n.type === 'booking' ? '#00e5ff' : '#ffb300'}; border-radius: 50%; margin-left: 10px; flex-shrink: 0;"></span>` : '';
+                        let borderLeftColor = n.type === 'booking' ? '#00e5ff' : '#ffb300';
+                        let unreadBg = isUnread ? `background: rgba(${n.type === 'booking' ? '0,229,255' : '255,179,0'}, 0.04);` : '';
+
+                        if (n.type === 'booking') {
+                            statusColor = '#00e5ff';
+                            iconSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+                            const tableName = n.table ? n.table.name : 'Meja';
+                            
+                            switch(n.status.toLowerCase()) {
+                                case 'pending':
+                                    title = 'Booking Meja Dibuat';
+                                    description = `Booking ${tableName} pada ${formatDate(n.booking_date)} pukul ${n.start_time.substring(0, 5)} - ${n.end_time.substring(0, 5)} menunggu pembayaran.`;
+                                    break;
+                                case 'booked':
+                                case 'confirmed':
+                                    title = 'Booking Meja Berhasil!';
+                                    description = `Pesanan ${tableName} Anda telah berhasil dikonfirmasi untuk bermain pada ${formatDate(n.booking_date)}!`;
+                                    break;
+                                case 'completed':
+                                    title = 'Sesi Bermain Selesai';
+                                    description = `Terima kasih telah bermain di ${tableName}. Sampai jumpa kembali!`;
+                                    break;
+                                case 'cancelled':
+                                    title = 'Booking Dibatalkan';
+                                    description = `Booking ${tableName} pada ${formatDate(n.booking_date)} telah dibatalkan.`;
+                                    break;
+                                default:
+                                    title = 'Booking Meja Diperbarui';
+                                    description = `Status booking ${tableName} Anda diperbarui menjadi ${n.status}.`;
+                            }
+                        } else {
+                            statusColor = '#ffb300';
+                            iconSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
+                            const tableName = (n.booking && n.booking.table) ? n.booking.table.name : '';
+                            const tableInfo = tableName ? ` (Meja ${tableName})` : '';
+                            
+                            switch(n.status.toLowerCase()) {
+                                case 'pending':
+                                    title = 'Pesanan F&B Dibuat';
+                                    description = `Pesanan F&B${tableInfo}: ${n.items_summary} menunggu pembayaran.`;
+                                    break;
+                                case 'paid':
+                                case 'success':
+                                    title = 'Pesanan F&B Berhasil!';
+                                    description = `Pembayaran pesanan F&B${tableInfo}: ${n.items_summary} berhasil dan sedang diproses.`;
+                                    break;
+                                case 'completed':
+                                    title = 'Pesanan F&B Selesai';
+                                    description = `Pesanan F&B${tableInfo}: ${n.items_summary} telah disajikan. Selamat menikmati!`;
+                                    break;
+                                case 'cancelled':
+                                case 'expired':
+                                    title = 'Pesanan F&B Dibatalkan';
+                                    description = `Pesanan F&B${tableInfo}: ${n.items_summary} telah dibatalkan.`;
+                                    break;
+                                default:
+                                    title = 'Pesanan F&B Diperbarui';
+                                    description = `Pesanan F&B Anda diperbarui menjadi ${n.status}.`;
+                            }
+                        }
+
+                        if (notifContent) {
+                            notifContent.innerHTML += `
+                                <div class="notif-item ${n.type} ${isUnread ? 'unread' : ''}" data-key="${key}" style="border-left: 3px solid ${borderLeftColor}; margin-bottom: 8px; padding: 10px; border-radius: 8px; transition: background 0.2s; ${unreadBg}">
+                                    <div style="display: flex; gap: 10px; align-items: flex-start;">
+                                        <div style="background: rgba(${n.type === 'booking' ? '0,229,255' : '255,179,0'}, 0.1); color: ${statusColor}; padding: 8px; border-radius: 8px; margin-top: 2px;">
+                                            ${iconSvg}
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 5px;">
+                                                <div style="font-size: 0.8rem; font-weight: 700; color: #fff; line-height: 1.2;">${title}</div>
+                                                ${dotIndicator}
+                                            </div>
+                                            <div style="font-size: 0.7rem; color: #aaa; margin-top: 3px; line-height: 1.3;">${description}</div>
+                                            <div style="font-size: 0.65rem; color: #666; margin-top: 4px;">${n.time_ago}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    // Store currentKeys globally to reference during read triggers
+                    window.latestNotifKeys = currentKeys;
+
+                    // Populate Badge Count
+                    if (badge) {
+                        if (unreadCount > 0) {
+                            badge.innerText = unreadCount;
+                            badge.style.display = 'flex';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+
+                    // Play Sound and Show Toast for newly updated notifications
+                    if (playSound && newlyUpdatedNotifs.length > 0) {
+                        notificationSound.play().catch(e => console.log('Audio play blocked'));
+
+                        newlyUpdatedNotifs.forEach(n => {
+                            // Trigger Toast
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 6000,
+                                timerProgressBar: true,
+                                background: '#141418',
+                                color: '#fff',
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            });
+
+                            let toastTitle = '';
+                            let toastIcon = 'info';
+                            let toastText = '';
+                            
+                            if (n.type === 'booking') {
+                                const tableName = n.table ? n.table.name : 'Meja';
+                                if (n.status.toLowerCase() === 'booked' || n.status.toLowerCase() === 'confirmed') {
+                                    toastIcon = 'success';
+                                    toastTitle = `Booking ${tableName} Berhasil!`;
+                                    toastText = 'Pesanan Anda telah dikonfirmasi.';
+                                } else if (n.status.toLowerCase() === 'completed') {
+                                    toastIcon = 'info';
+                                    toastTitle = `Sesi ${tableName} Selesai`;
+                                    toastText = 'Terima kasih telah bermain di Jay\'s Billiard.';
+                                } else if (n.status.toLowerCase() === 'cancelled') {
+                                    toastIcon = 'error';
+                                    toastTitle = `Booking ${tableName} Dibatalkan`;
+                                    toastText = 'Booking Anda telah dibatalkan.';
+                                }
+                            } else {
+                                if (n.status.toLowerCase() === 'paid' || n.status.toLowerCase() === 'success') {
+                                    toastIcon = 'success';
+                                    toastTitle = 'Pesanan F&B Berhasil!';
+                                    toastText = 'Sajian Anda sedang dipersiapkan.';
+                                } else if (n.status.toLowerCase() === 'completed') {
+                                    toastIcon = 'success';
+                                    toastTitle = 'Pesanan F&B Selesai';
+                                    toastText = 'Pesanan Anda telah disajikan.';
+                                } else if (n.status.toLowerCase() === 'cancelled') {
+                                    toastIcon = 'error';
+                                    toastTitle = 'Pesanan F&B Dibatalkan';
+                                    toastText = 'Pemesanan makanan Anda dibatalkan.';
+                                }
+                            }
+
+                            if (toastTitle) {
+                                Toast.fire({
+                                    icon: toastIcon,
+                                    title: toastTitle,
+                                    text: toastText,
+                                    confirmButtonColor: '#00e5ff'
+                                });
+                            }
+                        });
+                    }
+                })
+                .catch(error => console.error('Error checking notifications:', error));
+        }
+
+        // Mark all current notifications as read and persist to localStorage
+        function markAllAsRead() {
+            if (!window.latestNotifKeys || window.latestNotifKeys.length === 0) {
+                return;
+            }
+
+            let readKeys = [];
+            try {
+                readKeys = JSON.parse(localStorage.getItem('user_read_notification_keys')) || [];
+            } catch(e) {
+                readKeys = [];
+            }
+
+            // Merge current keys
+            window.latestNotifKeys.forEach(k => {
+                if (!readKeys.includes(k)) {
+                    readKeys.push(k);
+                }
+            });
+
+            // Persist read states
+            localStorage.setItem('user_read_notification_keys', JSON.stringify(readKeys));
+            
+            // Clear badge
+            const badge = document.getElementById('notif-badge-count');
+            if (badge) {
+                badge.style.display = 'none';
+                badge.innerText = '0';
+            }
+
+            // Remove unread indicators immediately from the dropdown view
+            const unreadDots = document.querySelectorAll('#notifDropdown .unread-dot');
+            unreadDots.forEach(dot => dot.style.display = 'none');
+
+            const unreadItems = document.querySelectorAll('.notif-item.unread');
+            unreadItems.forEach(item => {
+                item.classList.remove('unread');
+                item.style.background = 'transparent';
+            });
+        }
+
+        // Click listener for the notification bell
+        const bellBtn = document.getElementById('notifBellBtn');
+        if (bellBtn) {
+            bellBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                markAllAsRead();
+            });
+        }
+
+        // Click listener for the mark all read button
+        const markAllBtn = document.getElementById('markAllReadBtn');
+        if (markAllBtn) {
+            markAllBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                markAllAsRead();
+            });
+        }
+
+        // Check every 10 seconds
+        setInterval(checkUserNotifications, 10000);
+        
+        // Initial check
+        checkUserNotifications();
+    });
+</script><?php /**PATH C:\laragon\www\jaysbilliard-main\resources\views/component/c_dashboard/sidebar/sidebar_user.blade.php ENDPATH**/ ?>

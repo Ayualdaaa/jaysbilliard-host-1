@@ -33,7 +33,7 @@
                 <div id="notifDropdown" style="display: none; position: absolute; top: 45px; right: 0; width: 320px; background: #1a1a1e; border: 1px solid #333; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 1000; padding: 15px; color: #fff;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
                         <span style="font-weight: 700; font-size: 0.9rem;">Notifikasi Baru</span>
-                        <span style="font-size: 0.75rem; color: #00e5ff; cursor: pointer;">Tandai semua dibaca</span>
+                        <span id="markAllReadBtn" style="font-size: 0.75rem; color: #00e5ff; cursor: pointer;">Tandai semua dibaca</span>
                     </div>
                     
                     <div id="notifListContent" style="max-height: 350px; overflow-y: auto;">
@@ -41,7 +41,7 @@
                         <div style="text-align: center; padding: 20px; color: #666; font-size: 0.8rem;">Tidak ada pesanan baru</div>
                     </div>
 
-                    <a href="{{ route('admin.history') }}" style="display: block; text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #333; color: #00e5ff; font-size: 0.8rem; text-decoration: none; font-weight: 600;">Lihat Semua Riwayat</a>
+                    <a href="{{ (auth()->check() && auth()->user()->role === 'admin') ? route('admin.history') : route('user.history') }}" style="display: block; text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #333; color: #00e5ff; font-size: 0.8rem; text-decoration: none; font-weight: 600;">Lihat Semua Riwayat</a>
                 </div>
             </div>
 

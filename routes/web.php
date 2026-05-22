@@ -93,6 +93,7 @@ Route::middleware('user')->group(function () {
     Route::get('/dashboard/fnb/konfirmasi', [DashboardController::class, 'fnbKonfirmasi'])->name('user.fnb.konfirmasi');
     Route::post('/dashboard/fnb/checkout', [DashboardController::class, 'fnbCheckout'])->name('user.fnb.checkout');
     Route::post('/dashboard/fnb/success', [DashboardController::class, 'fnbSuccess'])->name('user.fnb.success');
+    Route::get('/dashboard/notifications/check', [DashboardController::class, 'checkNotifications'])->name('user.notifications.check');
 
     // Booking
     Route::get('/booking', [BookingController::class , 'create'])->name('booking.create');

@@ -343,4 +343,50 @@ class DashboardController extends Controller
             return response()->json(['success' => true, 'message' => 'Profil berhasil diperbarui.']);
         }
     }
+
+    public function checkNotifications()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'notifications' => []], 401);
+        }
+
+        // Get 5 latest bookings of this user sorted by updated_at
+        $bookings = Booking::with('table')
+            ->where('user_id', $user->id)
+            ->latest('updated_at')
+            ->take(5)
+            ->get()
+            ->map(function($b) {
+                $b->type = 'booking';
+                $b->time_ago = $b->updated_at->diffForHumans();
+                return $b;
+            });
+
+        // Get 5 latest F&B orders of this user (associated with user's bookings)
+        $orders = Order::whereHas('booking', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->with(['details.menu', 'booking.table'])
+        ->latest('updated_at')
+        ->take(5)
+        ->get()
+        ->map(function($o) {
+            $o->type = 'order';
+            $o->time_ago = $o->updated_at->diffForHumans();
+            // Format items string
+            $o->items_summary = $o->details->map(function($d) {
+                return ($d->menu->name ?? 'Menu') . ' (x' . $d->quantity . ')';
+            })->implode(', ');
+            return $o;
+        });
+
+        // Combine and Sort by updated_at desc
+        $combined = $bookings->concat($orders)->sortByDesc('updated_at')->values();
+
+        return response()->json([
+            'success' => true,
+            'notifications' => $combined
+        ]);
+    }
 }
