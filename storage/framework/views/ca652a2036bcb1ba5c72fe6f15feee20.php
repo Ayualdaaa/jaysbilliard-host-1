@@ -1,9 +1,19 @@
 
 <header class="adm-topbar">
     <div class="adm-topbar-left">
-        <h1 class="adm-topbar-title"><?php echo e($topbar_title ?? 'Dashboard'); ?></h1>
-        <p class="adm-topbar-sub"><?php echo e($topbar_sub ?? "Kelola kebutuhan operasional jay's billiard"); ?></p>
+        <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+        <div>
+            <h1 class="adm-topbar-title"><?php echo e($topbar_title ?? 'Dashboard'); ?></h1>
+            <p class="adm-topbar-sub"><?php echo e($topbar_sub ?? "Kelola kebutuhan operasional jay's billiard"); ?></p>
+        </div>
     </div>
+
     <link rel="stylesheet" href="<?php echo e(asset('css/css_page/css_interaksi component/profile_dropdown.css')); ?>">
     <div class="adm-topbar-right" style="display: flex; align-items: center; gap: 20px;">
         <?php if(isset($topbar_right)): ?>

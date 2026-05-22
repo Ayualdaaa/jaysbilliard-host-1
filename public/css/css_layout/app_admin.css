@@ -679,3 +679,9 @@ body {
         font-size: 0.7rem;
     }
 }
+
+/* Hide mobile menu button by default on desktop */
+.mobile-menu-btn {
+    display: none;
+}
+

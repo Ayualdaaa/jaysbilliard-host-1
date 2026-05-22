@@ -27,7 +27,7 @@
                         </div>
                         <div class="item-details">
                             <h3 class="item-name"><?php echo e($menu->name); ?></h3>
-                            <div class="item-category"><?php echo e($menu->category); ?> <span style="margin-left: 10px; color: <?php echo e($menu->stock > 0 ? '#00e5ff' : '#ff5252'); ?>; font-weight: 700;">• STOK: <?php echo e($menu->stock); ?></span></div>
+                            <div class="item-category"><?php echo e($menu->category); ?> <span style="margin-left: 10px; color: <?php echo e($menu->stock > 0 ? '#00e5ff' : '#ff5252'); ?>; font-weight: 700;">• <?php echo e($menu->stock > 0 ? 'TERSEDIA' : 'HABIS'); ?></span></div>
                             <p class="item-desc"><?php echo e($menu->description); ?></p>
                             <button class="add-btn" data-id="<?php echo e($menu->id); ?>" data-name="<?php echo e($menu->name); ?>"
                                 data-price="<?php echo e($menu->price); ?>" data-image="<?php echo e(asset('storage/' . $menu->image)); ?>"

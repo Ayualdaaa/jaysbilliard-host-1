@@ -29,7 +29,7 @@
                         </div>
                         <div class="item-details">
                             <h3 class="item-name">{{ $menu->name }}</h3>
-                            <div class="item-category">{{ $menu->category }} <span style="margin-left: 10px; color: {{ $menu->stock > 0 ? '#00e5ff' : '#ff5252' }}; font-weight: 700;">• STOK: {{ $menu->stock }}</span></div>
+                            <div class="item-category">{{ $menu->category }} <span style="margin-left: 10px; color: {{ $menu->stock > 0 ? '#00e5ff' : '#ff5252' }}; font-weight: 700;">• {{ $menu->stock > 0 ? 'TERSEDIA' : 'HABIS' }}</span></div>
                             <p class="item-desc">{{ $menu->description }}</p>
                             <button class="add-btn" data-id="{{ $menu->id }}" data-name="{{ $menu->name }}"
                                 data-price="{{ $menu->price }}" data-image="{{ asset('storage/' . $menu->image) }}"

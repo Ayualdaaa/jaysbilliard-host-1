@@ -205,3 +205,5 @@
         localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
     });
 </script>
+<script src="{{ asset('js/js_component/mobile_menu.js') }}"></script>
+

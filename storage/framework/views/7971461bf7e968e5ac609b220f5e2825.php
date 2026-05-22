@@ -99,4 +99,5 @@
         sidebar.classList.toggle('collapsed');
         localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
     });
-</script><?php /**PATH C:\laragon\www\jaysbilliard-main\resources\views/component/c_dashboard/sidebar/sidebar_user.blade.php ENDPATH**/ ?>
+</script>
+<script src="<?php echo e(asset('js/js_component/mobile_menu.js')); ?>"></script><?php /**PATH C:\laragon\www\jaysbilliard-main\resources\views/component/c_dashboard/sidebar/sidebar_user.blade.php ENDPATH**/ ?>
