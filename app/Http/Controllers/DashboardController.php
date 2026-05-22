@@ -60,7 +60,7 @@ class DashboardController extends Controller
         $today = \Carbon\Carbon::now('Asia/Jakarta')->toDateString();
         // Load all tables with all active bookings to support dynamic date selection on frontend
         $tables = Table::with(['bookings' => function($query) {
-            $query->whereIn('status', ['confirmed', 'booked', 'pending', 'dipesan'])
+            $query->whereIn('status', ['confirmed', 'booked', 'pending', 'dipesan', 'paid', 'lunas', 'completed'])
                   ->where('booking_date', '>=', \Carbon\Carbon::now('Asia/Jakarta')->subDays(1))
                   ->orderBy('start_time', 'asc');
         }])->get();

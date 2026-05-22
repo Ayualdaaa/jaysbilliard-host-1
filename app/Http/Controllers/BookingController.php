@@ -45,7 +45,7 @@ class BookingController extends Controller
         foreach ($validated['table_ids'] as $table_id) {
             $overlap = Booking::where('table_id', $table_id)
                 ->where('booking_date', $validated['booking_date'])
-                ->whereIn('status', ['pending', 'booked', 'dipesan', 'confirmed', 'paid', 'lunas'])
+                ->whereIn('status', ['pending', 'booked', 'dipesan', 'confirmed', 'paid', 'lunas', 'completed'])
                 ->where(function ($query) use ($validated) {
                     $query->where('start_time', '<', $validated['end_time'])
                           ->where('end_time', '>', $validated['start_time']);
@@ -118,7 +118,7 @@ class BookingController extends Controller
     {
         $today = \Carbon\Carbon::now('Asia/Jakarta')->toDateString();
         $tables = Table::with(['bookings' => function($query) use ($today) {
-            $query->whereIn('status', ['confirmed', 'booked', 'pending', 'dipesan'])
+            $query->whereIn('status', ['confirmed', 'booked', 'pending', 'dipesan', 'paid', 'lunas', 'completed'])
                   ->where('booking_date', '>=', $today)
                   ->orderBy('booking_date', 'asc')
                   ->orderBy('start_time', 'asc');

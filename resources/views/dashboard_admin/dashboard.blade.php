@@ -143,24 +143,33 @@
                                     }
                                 }
 
-                                // Dynamic Time Calculation for all tables
+                                // Dynamic Time Calculation for all tables based on booked duration
                                 $elapsedTime = '00:00:00';
                                 $remainingTime = '00:00:00';
+                                $sessionEndTimeIso = '';
+                                $durationString = '2 Jam';
                                 if ($activeBooking && $activeBooking->status === 'confirmed') {
                                     try {
-                                        $baseDate = \Carbon\Carbon::parse($activeBooking->booking_date)->format('Y-m-d');
-                                        $start = \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->start_time, 'Asia/Jakarta');
-                                        $end = \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time, 'Asia/Jakarta');
+                                        $start = \Carbon\Carbon::parse($activeBooking->start_time);
+                                        $end = \Carbon\Carbon::parse($activeBooking->end_time);
                                         if ($end->lt($start)) { $end->addDay(); }
+                                        $durationInMinutes = $start->diffInMinutes($end);
+                                        $durationString = round($durationInMinutes / 60, 1) . ' Jam';
+                                        
+                                        // Count down starting from when admin confirmed (updated_at)
+                                        $confirmTime = \Carbon\Carbon::parse($activeBooking->updated_at)->timezone('Asia/Jakarta');
+                                        $sessionEndTime = $confirmTime->copy()->addMinutes($durationInMinutes);
+                                        $sessionEndTimeIso = $sessionEndTime->toIso8601String();
+                                        
                                         $now = \Carbon\Carbon::now('Asia/Jakarta');
                                         
-                                        if ($now->gt($start)) {
-                                            $diff = $start->diff($now);
+                                        if ($now->gt($confirmTime)) {
+                                            $diff = $confirmTime->diff($now);
                                             $elapsedTime = sprintf('%02d:%02d:%02d', ($diff->days * 24) + $diff->h, $diff->i, $diff->s);
                                         }
                                         
-                                        if ($end->gt($now)) {
-                                            $diffRem = $now->diff($end);
+                                        if ($sessionEndTime->gt($now)) {
+                                            $diffRem = $now->diff($sessionEndTime);
                                             $remainingTime = sprintf('%02d:%02d:%02d', ($diffRem->days * 24) + $diffRem->h, $diffRem->i, $diffRem->s);
                                         } else {
                                             $remainingTime = '00:00:00';
@@ -199,7 +208,7 @@
                                                         <span class="adm-timer-label">SISA WAKTU</span>
                                                         <div class="adm-timer-display timer-remaining" style="font-size: 1.75rem; font-weight: 800; color: #00d1ff;" 
                                                              data-id="{{ $activeBooking->id }}"
-                                                             data-end="{{ \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time, 'Asia/Jakarta')->lt(\Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->start_time, 'Asia/Jakarta')) ? \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time, 'Asia/Jakarta')->addDay()->toIso8601String() : \Carbon\Carbon::parse($baseDate . ' ' . $activeBooking->end_time, 'Asia/Jakarta')->toIso8601String() }}">
+                                                             data-end="{{ $sessionEndTimeIso }}">
                                                              {{ $remainingTime }}
                                                         </div>
                                                     </div>
@@ -214,7 +223,7 @@
                                                      @endif
                                                  </span></div>
                                                 <div style="margin-top: auto;">
-                                                    <div class="adm-info-row"><span class="adm-label">DIPESAN JAM</span><span class="adm-value">{{ $activeBooking->created_at->format('H:i') }}</span></div>
+                                                     <div class="adm-info-row"><span class="adm-label">DIPESAN JAM</span><span class="adm-value">{{ $activeBooking->created_at->format('H:i') }}</span></div>
                                                 </div>
                                             @endif
                                         @else
@@ -227,7 +236,7 @@
                                         <button type="button" class="btn-akhiri trigger-end-session" 
                                                 data-id="{{ $activeBooking->id }}" 
                                                 data-table="{{ $table->name }}"
-                                                data-duration="{{ $activeBooking->duration ?? '2 Jam' }}"
+                                                data-duration="{{ $durationString }}" 
                                                 data-elapsed="{{ $elapsedTime }}">AKHIRI SESI</button>
                                         <form id="end-session-form-{{ $activeBooking->id }}" action="{{ route('admin.booking.end', $activeBooking->id) }}" method="POST" style="display:none">
                                             @csrf

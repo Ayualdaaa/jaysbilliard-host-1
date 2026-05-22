@@ -29,7 +29,18 @@
                     @foreach($tables as $index => $table)
                         @php
                             $todayStr = \Carbon\Carbon::now('Asia/Jakarta')->toDateString();
-                            $activeBooking = $table->bookings->where('booking_date', $todayStr)->first();
+                            $nowTime = \Carbon\Carbon::now('Asia/Jakarta');
+                            $nowFloat = $nowTime->hour + ($nowTime->minute / 60);
+
+                            $activeBooking = $table->bookings->filter(function($b) use ($todayStr, $nowFloat) {
+                                if ($b->booking_date !== $todayStr) return false;
+                                $startParts = explode(':', $b->start_time);
+                                $startFloat = intval($startParts[0]) + (intval($startParts[1]) / 60);
+                                $endParts = explode(':', $b->end_time);
+                                $endFloat = intval($endParts[0]) + (intval($endParts[1]) / 60);
+                                return $nowFloat >= $startFloat && $nowFloat < $endFloat;
+                            })->first();
+
                             $statusClass = 'available';
                             $statusText = 'TERSEDIA';
 
@@ -37,10 +48,11 @@
                                 $statusClass = 'maintenance';
                                 $statusText = 'MAINTENANCE';
                             } elseif ($activeBooking) {
-                                if ($activeBooking->status === 'confirmed') {
+                                $statusLower = strtolower($activeBooking->status);
+                                if ($statusLower === 'confirmed') {
                                     $statusClass = 'occupied';
                                     $statusText = 'TERISI';
-                                } elseif ($activeBooking->status === 'pending' || $activeBooking->status === 'booked' || $activeBooking->status === 'dipesan') {
+                                } elseif (in_array($statusLower, ['pending', 'booked', 'dipesan', 'paid', 'lunas'])) {
                                     $statusClass = 'booked';
                                     $statusText = 'DIPESAN';
                                 }
@@ -587,10 +599,11 @@
                         });
 
                         if (overlappingBooking) {
-                            if (overlappingBooking.status === 'confirmed') {
+                            const statusLower = overlappingBooking.status.toLowerCase();
+                            if (statusLower === 'confirmed') {
                                 statusClass = 'occupied';
                                 statusText = 'TERISI';
-                            } else if (['pending', 'booked', 'dipesan'].includes(overlappingBooking.status)) {
+                            } else if (['pending', 'booked', 'dipesan', 'paid', 'lunas'].includes(statusLower)) {
                                 statusClass = 'booked';
                                 statusText = 'DIPESAN';
                             }
@@ -763,6 +776,18 @@
                         Swal.fire({
                             title: 'Meja Maintenance',
                             text: 'Gagal! Meja ini sedang dalam perbaikan.',
+                            icon: 'error',
+                            confirmButtonColor: '#ff3b3b',
+                            background: '#0f1115',
+                            color: '#fff'
+                        });
+                        return;
+                    }
+
+                    if (status === 'occupied' || status === 'booked') {
+                        Swal.fire({
+                            title: 'Meja Tidak Tersedia',
+                            text: 'Gagal! Meja ini sudah dipesan/terisi pada waktu tersebut. Silakan pilih waktu atau meja lain.',
                             icon: 'error',
                             confirmButtonColor: '#ff3b3b',
                             background: '#0f1115',
