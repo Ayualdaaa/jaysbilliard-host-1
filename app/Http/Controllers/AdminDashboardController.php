@@ -118,25 +118,8 @@ class AdminDashboardController extends Controller
         $booking = \App\Models\Booking::findOrFail($id);
         // Allow confirming if status is booked, pending, dipesan, paid, or lunas
         if (in_array(strtolower($booking->status), ['booked', 'pending', 'dipesan', 'paid', 'lunas'])) {
-            try {
-                // Calculate the duration from original start/end times in Asia/Jakarta timezone
-                $start = \Carbon\Carbon::parse($booking->start_time);
-                $end = \Carbon\Carbon::parse($booking->end_time);
-                $durationInMinutes = $start->diffInMinutes($end);
-                
-                // Get current local time in Jakarta
-                $now = \Carbon\Carbon::now('Asia/Jakarta');
-                
-                $booking->status = 'confirmed';
-                $booking->booking_date = $now->toDateString();
-                $booking->start_time = $now->format('H:i:s');
-                $booking->end_time = $now->addMinutes($durationInMinutes)->format('H:i:s');
-                $booking->save();
-            } catch (\Exception $e) {
-                // Fallback if parsing fails
-                $booking->status = 'confirmed';
-                $booking->save();
-            }
+            $booking->status = 'confirmed';
+            $booking->save();
         }
 
         return back()->with('success', 'Booking berhasil dikonfirmasi! Sesi permainan dimulai.');
@@ -183,29 +166,7 @@ class AdminDashboardController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $booking = \App\Models\Booking::findOrFail($id);
-        $newStatus = strtolower($request->status);
-        
-        if ($newStatus === 'confirmed') {
-            try {
-                // Calculate the duration from original start/end times in Asia/Jakarta timezone
-                $start = \Carbon\Carbon::parse($booking->start_time);
-                $end = \Carbon\Carbon::parse($booking->end_time);
-                $durationInMinutes = $start->diffInMinutes($end);
-                
-                // Get current local time in Jakarta
-                $now = \Carbon\Carbon::now('Asia/Jakarta');
-                
-                $booking->status = 'confirmed';
-                $booking->booking_date = $now->toDateString();
-                $booking->start_time = $now->format('H:i:s');
-                $booking->end_time = $now->addMinutes($durationInMinutes)->format('H:i:s');
-            } catch (\Exception $e) {
-                $booking->status = 'confirmed';
-            }
-        } else {
-            $booking->status = $request->status;
-        }
-        
+        $booking->status = $request->status;
         $booking->save();
 
         return back()->with('success', 'Status pemesanan berhasil diperbarui menjadi ' . $request->status);
