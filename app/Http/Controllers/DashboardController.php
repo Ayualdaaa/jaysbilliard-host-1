@@ -28,9 +28,12 @@ class DashboardController extends Controller
         $dbBookings = Booking::where('customer_name', $user->name)->get();
         $totalHours = 0;
         foreach ($dbBookings as $booking) {
-            $start = \Carbon\Carbon::parse($booking->start_time);
-            $end = \Carbon\Carbon::parse($booking->end_time);
-            $totalHours += $end->diffInHours($start);
+            $start = \Carbon\Carbon::parse($booking->booking_date . ' ' . $booking->start_time);
+            $end = \Carbon\Carbon::parse($booking->booking_date . ' ' . $booking->end_time);
+            if ($end->lt($start)) {
+                $end->addDay();
+            }
+            $totalHours += $start->diffInHours($end);
         }
         
         $tables = Table::with(['bookings' => function($query) use ($today) {

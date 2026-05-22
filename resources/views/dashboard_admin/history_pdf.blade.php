@@ -54,8 +54,11 @@
                     }
                     
                     try {
-                        $start = \Carbon\Carbon::parse($booking->start_time);
-                        $end = \Carbon\Carbon::parse($booking->end_time);
+                        $start = \Carbon\Carbon::parse($booking->booking_date . ' ' . $booking->start_time);
+                        $end = \Carbon\Carbon::parse($booking->booking_date . ' ' . $booking->end_time);
+                        if ($end->lt($start)) {
+                            $end->addDay();
+                        }
                         $duration = $start->diffInHours($end) . ' Jam';
                     } catch (\Exception $e) {
                         $duration = '2 Jam';

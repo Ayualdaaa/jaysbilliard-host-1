@@ -146,76 +146,76 @@
                                 // Dynamic Time Calculation for all tables based on booked duration
                                 $elapsedTime = '00:00:00';
                                 $remainingTime = '00:00:00';
-                                $sessionEndTimeIso = '';
-                                $durationString = '2 Jam';
-                                if ($activeBooking && $activeBooking->status === 'confirmed') {
-                                    try {
-                                        $start = \Carbon\Carbon::parse($activeBooking->start_time);
-                                        $end = \Carbon\Carbon::parse($activeBooking->end_time);
-                                        if ($end->lt($start)) { $end->addDay(); }
-                                        $durationInMinutes = $start->diffInMinutes($end);
-                                        $durationString = round($durationInMinutes / 60, 1) . ' Jam';
-                                        
-                                        // Count down starting from when admin confirmed (updated_at)
-                                        $confirmTime = \Carbon\Carbon::parse($activeBooking->updated_at)->timezone('Asia/Jakarta');
-                                        $sessionEndTime = $confirmTime->copy()->addMinutes($durationInMinutes);
-                                        $sessionEndTimeIso = $sessionEndTime->toIso8601String();
-                                        
-                                        $now = \Carbon\Carbon::now('Asia/Jakarta');
-                                        
-                                        if ($now->gt($confirmTime)) {
-                                            $diff = $confirmTime->diff($now);
-                                            $elapsedTime = sprintf('%02d:%02d:%02d', ($diff->days * 24) + $diff->h, $diff->i, $diff->s);
-                                        }
-                                        
-                                        if ($sessionEndTime->gt($now)) {
-                                            $diffRem = $now->diff($sessionEndTime);
-                                            $remainingTime = sprintf('%02d:%02d:%02d', ($diffRem->days * 24) + $diffRem->h, $diffRem->i, $diffRem->s);
-                                        } else {
-                                            $remainingTime = '00:00:00';
-                                        }
-                                    } catch (\Exception $e) {
-                                        // Silent fallback
-                                    }
-                                }
-                            @endphp
-
-                            <div class="adm-meja-card adm-meja--{{ $statusClass }}">
-                                <div class="adm-meja-card-top">
-                                    <div class="adm-meja-name-wrap">
-                                        <h3 class="adm-meja-name">{{ strtoupper($table->name) }}</h3>
-                                        <div class="adm-meja-status">
-                                            <span class="status-dot-sm"></span> {{ $statusLabel }}
-                                        </div>
-                                    </div>
-                                    <div class="adm-ball-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <circle cx="12" cy="12" r="1"></circle>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="adm-meja-card-body">
-                                    <div class="adm-info-box">
-                                        @if($activeBooking && $statusClass !== 'tersedia')
-                                            @if($statusClass === 'terisi')
-                                                <div class="adm-info-row" style="margin-bottom: 0.5rem;">
-                                                    <span class="adm-label">PEMAIN</span>
-                                                    <span class="adm-value" style="color: #00d1ff;">{{ $activeBooking->customer_name }}</span>
-                                                </div>
-                                                <div class="adm-timer-container" style="justify-content: center; width: 100%; display: flex;">
-                                                    <div class="adm-timer-group" style="width: 100%; text-align: center;">
-                                                        <span class="adm-timer-label">SISA WAKTU</span>
-                                                        <div class="adm-timer-display timer-remaining" style="font-size: 1.75rem; font-weight: 800; color: #00d1ff;" 
-                                                             data-id="{{ $activeBooking->id }}"
-                                                             data-end="{{ $sessionEndTimeIso }}">
-                                                             {{ $remainingTime }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="adm-info-row"><span class="adm-label">DIPESAN OLEH</span><span class="adm-value">{{ $activeBooking->customer_name }}</span></div>
-                                                <div class="adm-info-row"><span class="adm-label">DURASI</span><span class="adm-value">{{ \Carbon\Carbon::parse($activeBooking->start_time)->diffInHours(\Carbon\Carbon::parse($activeBooking->end_time)) }} Jam</span></div>
+                                       if ($activeBooking) {
+                                     try {
+                                         $start = \Carbon\Carbon::parse($activeBooking->booking_date . ' ' . $activeBooking->start_time);
+                                         $end = \Carbon\Carbon::parse($activeBooking->booking_date . ' ' . $activeBooking->end_time);
+                                         if ($end->lt($start)) { $end->addDay(); }
+                                         $durationInMinutes = $start->diffInMinutes($end);
+                                         $durationString = round($durationInMinutes / 60, 1) . ' Jam';
+                                         
+                                         if ($activeBooking->status === 'confirmed') {
+                                             // Count down starting from when admin confirmed (updated_at)
+                                             $confirmTime = \Carbon\Carbon::parse($activeBooking->updated_at)->timezone('Asia/Jakarta');
+                                             $sessionEndTime = $confirmTime->copy()->addMinutes($durationInMinutes);
+                                             $sessionEndTimeIso = $sessionEndTime->toIso8601String();
+                                             
+                                             $now = \Carbon\Carbon::now('Asia/Jakarta');
+                                             
+                                             if ($now->gt($confirmTime)) {
+                                                 $diff = $confirmTime->diff($now);
+                                                 $elapsedTime = sprintf('%02d:%02d:%02d', ($diff->days * 24) + $diff->h, $diff->i, $diff->s);
+                                             }
+                                             
+                                             if ($sessionEndTime->gt($now)) {
+                                                 $diffRem = $now->diff($sessionEndTime);
+                                                 $remainingTime = sprintf('%02d:%02d:%02d', ($diffRem->days * 24) + $diffRem->h, $diffRem->i, $diffRem->s);
+                                             } else {
+                                                 $remainingTime = '00:00:00';
+                                             }
+                                         }
+                                     } catch (\Exception $e) {
+                                         // Silent fallback
+                                     }
+                                 }
+                             @endphp
+ 
+                             <div class="adm-meja-card adm-meja--{{ $statusClass }}">
+                                 <div class="adm-meja-card-top">
+                                     <div class="adm-meja-name-wrap">
+                                         <h3 class="adm-meja-name">{{ strtoupper($table->name) }}</h3>
+                                         <div class="adm-meja-status">
+                                             <span class="status-dot-sm"></span> {{ $statusLabel }}
+                                         </div>
+                                     </div>
+                                     <div class="adm-ball-icon">
+                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                             <circle cx="12" cy="12" r="10"></circle>
+                                             <circle cx="12" cy="12" r="1"></circle>
+                                         </svg>
+                                     </div>
+                                 </div>
+                                 <div class="adm-meja-card-body">
+                                     <div class="adm-info-box">
+                                         @if($activeBooking && $statusClass !== 'tersedia')
+                                             @if($statusClass === 'terisi')
+                                                 <div class="adm-info-row" style="margin-bottom: 0.5rem;">
+                                                     <span class="adm-label">PEMAIN</span>
+                                                     <span class="adm-value" style="color: #00d1ff;">{{ $activeBooking->customer_name }}</span>
+                                                 </div>
+                                                 <div class="adm-timer-container" style="justify-content: center; width: 100%; display: flex;">
+                                                     <div class="adm-timer-group" style="width: 100%; text-align: center;">
+                                                         <span class="adm-timer-label">SISA WAKTU</span>
+                                                         <div class="adm-timer-display timer-remaining" style="font-size: 1.75rem; font-weight: 800; color: #00d1ff;" 
+                                                              data-id="{{ $activeBooking->id }}"
+                                                              data-end="{{ $sessionEndTimeIso }}">
+                                                              {{ $remainingTime }}
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             @else
+                                                 <div class="adm-info-row"><span class="adm-label">DIPESAN OLEH</span><span class="adm-value">{{ $activeBooking->customer_name }}</span></div>
+                                                 <div class="adm-info-row"><span class="adm-label">DURASI</span><span class="adm-value">{{ $durationString }}</span></div>
                                                  <div class="adm-info-row"><span class="adm-label">MAIN JAM</span><span class="adm-value">
                                                      {{ \Carbon\Carbon::parse($activeBooking->start_time)->format('H:i') }}
                                                      @if($activeBooking->booking_date !== \Carbon\Carbon::now('Asia/Jakarta')->toDateString())

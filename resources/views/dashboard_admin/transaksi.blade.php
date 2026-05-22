@@ -125,8 +125,11 @@
                                         $hasFnb = $fnbItems && $fnbItems->count() > 0;
                                         
                                         try {
-                                            $start = \Carbon\Carbon::parse($item->start_time);
-                                            $end = \Carbon\Carbon::parse($item->end_time);
+                                            $start = \Carbon\Carbon::parse($item->booking_date . ' ' . $item->start_time);
+                                            $end = \Carbon\Carbon::parse($item->booking_date . ' ' . $item->end_time);
+                                            if ($end->lt($start)) {
+                                                $end->addDay();
+                                            }
                                             $duration = $start->diffInHours($end) . ' Jam';
                                         } catch (\Exception $e) {
                                             $duration = '2 Jam';
