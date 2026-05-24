@@ -144,16 +144,6 @@ body {
     background: rgba(255, 255, 255, 0.04);
 }
 
-.adm-nav-link svg {
-    flex-shrink: 0;
-}
-
-.adm-nav-link span {
-    white-space: normal;
-    line-height: 1.4;
-    word-break: break-word;
-}
-
 .adm-nav-link.active {
     color: #ffffff;
     background: rgba(0, 229, 255, 0.12);
@@ -197,16 +187,6 @@ body {
     background: #1e2227;
     border-color: rgba(255, 255, 255, 0.15);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.adm-logout-btn svg {
-    flex-shrink: 0;
-}
-
-.adm-logout-btn span {
-    white-space: normal;
-    line-height: 1.4;
-    word-break: break-word;
 }
 
 /* Sidebar Transitions */
@@ -617,15 +597,17 @@ body {
     }
 
     .adm-sidebar.mobile-open .adm-brand-text,
+    .adm-sidebar.collapsed.mobile-open .adm-brand-text {
+        display: flex !important;
+        opacity: 1 !important;
+    }
+
     .adm-sidebar.mobile-open .adm-nav-link span,
     .adm-sidebar.mobile-open .adm-logout-btn span,
-    .adm-sidebar.collapsed.mobile-open .adm-brand-text,
     .adm-sidebar.collapsed.mobile-open .adm-nav-link span,
     .adm-sidebar.collapsed.mobile-open .adm-logout-btn span {
         display: block !important;
         opacity: 1 !important;
-        flex: 1;
-        text-align: left !important;
     }
     
     .adm-sidebar.mobile-open .adm-brand, .adm-sidebar.collapsed.mobile-open .adm-brand {
@@ -635,18 +617,17 @@ body {
 
     .adm-sidebar.mobile-open .adm-nav-link, .adm-sidebar.collapsed.mobile-open .adm-nav-link {
         justify-content: flex-start !important;
-        padding: 0.75rem 1rem !important;
-        gap: 0.85rem !important;
-        text-align: left !important;
+        padding: 0.72rem 0.85rem !important;
+        gap: 0.7rem !important;
     }
 
     .adm-sidebar.mobile-open .adm-logout-btn, .adm-sidebar.collapsed.mobile-open .adm-logout-btn {
         justify-content: flex-start !important;
-        padding: 0.9rem 1rem !important;
-        gap: 0.85rem !important;
+        padding: 0.9rem !important;
+        gap: 0.75rem !important;
     }
 
-    .adm-sidebar .adm-collapse-btn, .adm-sidebar.collapsed .adm-collapse-btn {
+    .adm-collapse-btn {
         display: none !important;
     }
 
