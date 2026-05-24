@@ -147,6 +147,7 @@ body {
     border-radius: 0.55rem;
     transition: all 0.2s ease;
     position: relative;
+    white-space: nowrap;
 }
 
 .adm-nav-link:hover {
@@ -190,6 +191,7 @@ body {
     font-family: 'Inter', sans-serif;
     transition: all 0.25s ease;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 .adm-logout-btn:hover {
@@ -595,18 +597,15 @@ body {
 @media (max-width: 768px) {
     .adm-sidebar, .adm-sidebar.collapsed {
         position: fixed;
-        right: -260px;
-        left: auto;
+        left: -260px;
         width: 260px !important;
-        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1000;
         height: 100dvh;
-        border-right: none;
-        border-left: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .adm-sidebar.mobile-open, .adm-sidebar.collapsed.mobile-open {
-        right: 0;
+        left: 0;
     }
 
     .adm-sidebar.mobile-open .adm-brand-text,
@@ -624,12 +623,10 @@ body {
         padding: 1.25rem 1rem 1.75rem !important;
     }
 
-    .adm-sidebar .adm-nav-link, .adm-sidebar.collapsed .adm-nav-link,
     .adm-sidebar.mobile-open .adm-nav-link, .adm-sidebar.collapsed.mobile-open .adm-nav-link {
         justify-content: flex-start !important;
         padding: 0.72rem 0.85rem !important;
         gap: 0.7rem !important;
-        text-align: left !important;
     }
 
     .adm-sidebar.mobile-open .adm-logout-btn, .adm-sidebar.collapsed.mobile-open .adm-logout-btn {
@@ -727,7 +724,9 @@ body {
 }
 
 /* Hide mobile menu button by default on desktop */
-.mobile-menu-btn {
-    display: none;
+@media (min-width: 769px) {
+    .mobile-menu-btn {
+        display: none !important;
+    }
 }
 

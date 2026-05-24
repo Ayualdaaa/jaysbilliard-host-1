@@ -1,6 +1,13 @@
 {{-- Top Bar --}}
 <header class="adm-topbar">
     <div class="adm-topbar-left">
+        <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
         <div>
             <h1 class="adm-topbar-title">{{ $topbar_title ?? 'Dashboard' }}</h1>
             <p class="adm-topbar-sub">{{ $topbar_sub ?? "Kelola kebutuhan operasional jay's billiard" }}</p>
@@ -12,13 +19,6 @@
         @if(isset($topbar_right))
             {!! $topbar_right !!}
         @else
-            <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
             {{-- Notification Bell --}}
             <div class="adm-notif-bell-wrap" style="position: relative;">
                 <div class="adm-notif-bell-btn" id="notifBellBtn" style="color: #666; transition: all 0.3s ease; cursor: pointer; padding: 5px;">
