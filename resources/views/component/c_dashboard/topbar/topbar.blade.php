@@ -61,12 +61,9 @@
                     dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
                 });
                 document.addEventListener('click', function() {
-                    const dropdown = document.getElementById('notifDropdown');
-                    if (dropdown) dropdown.style.display = 'none';
+                    document.getElementById('notifDropdown').style.display = 'none';
                 });
                 document.getElementById('notifDropdown').addEventListener('click', (e) => e.stopPropagation());
-
-
             </script>
 
             <div class="adm-user-profile-wrap">
@@ -85,36 +82,3 @@
 </header>
 
 <script src="{{ asset('js/js_component/profile_dropdown.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mobile Menu Toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const sidebar = document.querySelector('.adm-sidebar');
-                if (sidebar) {
-                    sidebar.classList.toggle('mobile-open');
-                    
-                    let overlay = document.querySelector('.mobile-overlay');
-                    if (!overlay) {
-                        overlay = document.createElement('div');
-                        overlay.className = 'mobile-overlay';
-                        document.body.appendChild(overlay);
-                        
-                        overlay.addEventListener('click', function() {
-                            sidebar.classList.remove('mobile-open');
-                            overlay.classList.remove('active');
-                        });
-                    }
-                    
-                    if (sidebar.classList.contains('mobile-open')) {
-                        overlay.classList.add('active');
-                    } else {
-                        overlay.classList.remove('active');
-                    }
-                }
-            });
-        }
-    });
-</script>
