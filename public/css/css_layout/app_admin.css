@@ -163,7 +163,7 @@ body {
     color: #ffffff;
     background: rgba(0, 229, 255, 0.12);
     border-left: 4px solid #00e5ff;
-    padding-left: calc(1rem - 4px);
+    padding-left: calc(1rem - 4px) !important;
     font-weight: 700;
 }
 
@@ -577,6 +577,10 @@ body {
         padding: 0.85rem !important;
     }
 
+    .adm-sidebar .adm-nav-link.active, .adm-sidebar.collapsed .adm-nav-link.active {
+        padding-left: calc(0.85rem - 4px) !important;
+    }
+
     .adm-sidebar .adm-logout-btn, .adm-sidebar.collapsed .adm-logout-btn {
         padding: 0.85rem !important;
     }
@@ -632,6 +636,10 @@ body {
         justify-content: flex-start !important;
         padding: 0.85rem 1rem !important;
         gap: 0.85rem !important;
+    }
+
+    .adm-sidebar.mobile-open .adm-nav-link.active, .adm-sidebar.collapsed.mobile-open .adm-nav-link.active {
+        padding-left: calc(1rem - 4px) !important;
     }
 
     .adm-sidebar.mobile-open .adm-logout-btn, .adm-sidebar.collapsed.mobile-open .adm-logout-btn {
