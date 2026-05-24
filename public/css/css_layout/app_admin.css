@@ -138,7 +138,7 @@ body {
 .adm-nav-link {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.85rem;
     text-decoration: none;
     color: rgba(255, 255, 255, 0.4);
     font-size: 0.85rem;
@@ -625,6 +625,9 @@ body {
         display: block !important;
         opacity: 1 !important;
         text-align: left;
+        flex: 1;
+        min-width: 0;
+        white-space: normal;
     }
     
     .adm-sidebar.mobile-open .adm-brand, .adm-sidebar.collapsed.mobile-open .adm-brand {
@@ -635,7 +638,7 @@ body {
     .adm-sidebar.mobile-open .adm-nav-link, .adm-sidebar.collapsed.mobile-open .adm-nav-link {
         justify-content: flex-start !important;
         padding: 0.85rem 1rem !important;
-        gap: 0.65rem !important;
+        gap: 0.85rem !important;
     }
 
     .adm-sidebar.mobile-open .adm-nav-link.active, .adm-sidebar.collapsed.mobile-open .adm-nav-link.active {
