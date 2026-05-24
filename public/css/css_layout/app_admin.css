@@ -162,20 +162,9 @@ body {
 .adm-nav-link.active {
     color: #ffffff;
     background: rgba(0, 229, 255, 0.12);
+    border-left: 4px solid #00e5ff;
+    padding-left: calc(1rem - 4px);
     font-weight: 700;
-}
-
-.adm-nav-link.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 70%;
-    width: 4px;
-    background: #00e5ff;
-    border-radius: 0 4px 4px 0;
-    box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
 }
 
 .adm-nav-link.active svg {
@@ -631,6 +620,7 @@ body {
     .adm-sidebar.collapsed.mobile-open .adm-logout-btn span {
         display: block !important;
         opacity: 1 !important;
+        text-align: left;
     }
     
     .adm-sidebar.mobile-open .adm-brand, .adm-sidebar.collapsed.mobile-open .adm-brand {
@@ -640,8 +630,8 @@ body {
 
     .adm-sidebar.mobile-open .adm-nav-link, .adm-sidebar.collapsed.mobile-open .adm-nav-link {
         justify-content: flex-start !important;
-        padding: 0.72rem 0.85rem !important;
-        gap: 0.7rem !important;
+        padding: 0.85rem 1rem !important;
+        gap: 0.85rem !important;
     }
 
     .adm-sidebar.mobile-open .adm-logout-btn, .adm-sidebar.collapsed.mobile-open .adm-logout-btn {
@@ -651,7 +641,7 @@ body {
     }
 
     .adm-collapse-btn {
-        display: none !important;
+        display: flex !important;
     }
 
     .adm-main {
