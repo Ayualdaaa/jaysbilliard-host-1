@@ -13,11 +13,8 @@
                 </svg>
             </div>
             <div class="adm-brand-text">
-                <span class="adm-brand-name" style="display: flex; align-items: center; gap: 6px;">
-                    Jay's Billiard 
-                    <span style="color: #00e5ff; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; padding-top: 2px;">USER</span>
-                </span>
-                <span class="adm-brand-sub" style="color: #00e5ff; font-size: 0.65rem; letter-spacing: 0.1em; margin-top: 2px;">DASHBOARD</span>
+                <span class="adm-brand-name">Jay's Billiard</span>
+                <span class="adm-brand-sub">USER DASHBOARD</span>
             </div>
             <button class="adm-collapse-btn" id="sidebarToggle">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -76,7 +73,8 @@
         <form action="{{ route('logout') }}" method="POST" id="logout-sidebar-form">
             @csrf
             <button type="button" class="adm-logout-btn adm-logout-trigger"
-                onclick="window.confirmLogout(event, this.form)">
+                onclick="window.confirmLogout(event, this.form)"
+                style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
