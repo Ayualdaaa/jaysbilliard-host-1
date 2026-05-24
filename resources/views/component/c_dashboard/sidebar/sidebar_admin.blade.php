@@ -12,8 +12,11 @@
                 </svg>
             </div>
             <div class="adm-brand-text">
-                <span class="adm-brand-name">Jay's Billiard</span>
-                <span class="adm-brand-sub">ADMIN DASHBOARD</span>
+                <span class="adm-brand-name" style="display: flex; align-items: center; gap: 6px;">
+                    Jay's Billiard 
+                    <span style="color: #00e5ff; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; padding-top: 2px;">ADMIN</span>
+                </span>
+                <span class="adm-brand-sub" style="color: #00e5ff; font-size: 0.65rem; letter-spacing: 0.1em; margin-top: 2px;">DASHBOARD</span>
             </div>
             <button class="adm-collapse-btn" id="sidebarToggle">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
