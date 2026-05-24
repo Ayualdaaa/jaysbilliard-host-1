@@ -12,6 +12,7 @@
         /* Premium Tabs Styling */
         .history-tabs {
             display: flex;
+            flex-wrap: wrap;
             gap: 16px;
             margin-bottom: 28px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);

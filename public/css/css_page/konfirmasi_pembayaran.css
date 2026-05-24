@@ -568,3 +568,33 @@
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.3);
 }
+
+/* --- Responsive Media Queries --- */
+@media (max-width: 1024px) {
+    .konfirmasi-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .summary-container, .timer-card, .methods-card, .midtrans-card {
+        padding: 20px;
+    }
+    .total-value {
+        font-size: 1.5rem;
+    }
+    .konfirmasi-footer {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .cancel-link, .pay-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+@media (max-width: 480px) {
+    .success-modal {
+        width: 90%;
+        padding: 24px;
+    }
+}

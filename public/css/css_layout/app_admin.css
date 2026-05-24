@@ -597,13 +597,9 @@ body {
     }
 
     .adm-sidebar.mobile-open .adm-brand-text,
-    .adm-sidebar.collapsed.mobile-open .adm-brand-text {
-        display: flex !important;
-        opacity: 1 !important;
-    }
-
     .adm-sidebar.mobile-open .adm-nav-link span,
     .adm-sidebar.mobile-open .adm-logout-btn span,
+    .adm-sidebar.collapsed.mobile-open .adm-brand-text,
     .adm-sidebar.collapsed.mobile-open .adm-nav-link span,
     .adm-sidebar.collapsed.mobile-open .adm-logout-btn span {
         display: block !important;
@@ -622,7 +618,7 @@ body {
     }
 
     .adm-sidebar.mobile-open .adm-logout-btn, .adm-sidebar.collapsed.mobile-open .adm-logout-btn {
-        justify-content: flex-start !important;
+        justify-content: center !important;
         padding: 0.9rem !important;
         gap: 0.75rem !important;
     }
