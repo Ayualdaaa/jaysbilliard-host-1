@@ -4,7 +4,6 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/css_page/user_meja.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/css_page/css_interaksi component/chat.css') }}">
 @endpush
 
 @section('content')
@@ -341,8 +340,6 @@
         </div>
     </div>
 
-    {{-- Chat Popup Component --}}
-    @include('component.c_dashboard.modal.chat_blade')
 @endsection
 
 @push('scripts')
@@ -864,161 +861,21 @@
                 });
             });
 
-            // Chat Logic for User Dashboard (Meja)
+            // Handle CHAT button click inside tooltip
             const chatButtons = document.querySelectorAll('.tm-btn-chat');
-            const chatOverlay = document.getElementById('chatOverlay');
-            const chatPopup = document.getElementById('chatPopup');
-            const chatCloseBtn = document.getElementById('chatClose');
-            const chatBody = document.getElementById('chatBody');
-            const chatInput = document.getElementById('chatInput');
-            const chatSendBtn = document.getElementById('chatSend');
-
-            let userChatData = JSON.parse(localStorage.getItem('billiard_chat_history'));
-            if (!userChatData) {
-                userChatData = {
-                    1: { table: 'MEJA 01', status: 'TERISI', statusColor: '#00e5ff', user: 'Rian S.', messages: [] },
-                    2: { table: 'MEJA 02', status: 'TERSEDIA', statusColor: '#00e5ff', user: 'System', messages: [] },
-                    3: { table: 'MEJA 03', status: 'DIPESAN', statusColor: '#ffab00', user: 'Zaenal', messages: [] },
-                    4: { table: 'MEJA 04', status: 'TERISI', statusColor: '#00e5ff', user: 'Haecan', messages: [] }
-                };
-                localStorage.setItem('billiard_chat_history', JSON.stringify(userChatData));
-            }
-
-            function updateUserBadges() {
-                chatButtons.forEach(btn => {
-                    const parentTable = btn.closest('.billiard-table');
-                    if (parentTable) {
-                        const id = parentTable.dataset.id;
-                        let badge = btn.querySelector('.notif-badge');
-
-                        if (userChatData[id] && userChatData[id].hasUnreadForUser) {
-                            if (badge) badge.style.display = 'flex';
-                        } else {
-                            if (badge) badge.style.display = 'none';
-                        }
-                    }
-                });
-            }
-
-            function renderUserMessages(id) {
-                chatBody.innerHTML = '';
-                const messages = userChatData[id] ? userChatData[id].messages : [];
-                if (messages.length === 0) {
-                    const welcomeWrapper = document.createElement('div');
-                    welcomeWrapper.className = 'chat-msg chat-msg--customer'; // Left side (admin)
-                    welcomeWrapper.innerHTML = `
-                                                <div class="chat-bubble">Halo, ada yang bisa kami bantu mengenai meja ini?</div>
-                                                <div class="chat-meta">System &bull; Now</div>
-                                            `;
-                    chatBody.appendChild(welcomeWrapper);
-                } else {
-                    messages.forEach(msg => {
-                        const wrapper = document.createElement('div');
-                        // from 'user' -> right (admin class), from 'admin' -> left (customer class)
-                        wrapper.className = 'chat-msg ' + (msg.from === 'user' ? 'chat-msg--admin' : 'chat-msg--customer');
-                        wrapper.innerHTML = `
-                                                    <div class="chat-bubble">${msg.text}</div>
-                                                    <div class="chat-meta">${msg.time}</div>
-                                                `;
-                        chatBody.appendChild(wrapper);
-                    });
-                }
-                chatBody.scrollTop = chatBody.scrollHeight;
-            }
-
             chatButtons.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
+                    e.stopPropagation(); // Avoid triggering parent click (table selection)
+
                     const parentTable = btn.closest('.billiard-table');
                     if (parentTable) {
                         const id = parentTable.dataset.id;
-                        const name = parentTable.dataset.name;
-                        const statusClass = parentTable.dataset.status;
-
-                        // Clear unread flag for user when opening chat
-                        if (userChatData[id] && userChatData[id].hasUnreadForUser) {
-                            userChatData[id].hasUnreadForUser = false;
-                            localStorage.setItem('billiard_chat_history', JSON.stringify(userChatData));
-                            updateUserBadges();
+                        if (typeof window.openChatWindow === 'function') {
+                            window.openChatWindow(id);
                         }
-
-                        document.getElementById('chatTableName').textContent = name;
-                        let statusText = 'TERSEDIA';
-                        let statusColor = '#00e5ff';
-                        if (statusClass === 'occupied') { statusText = 'TERISI'; statusColor = '#ff3b3b'; }
-                        else if (statusClass === 'booked') { statusText = 'DIPESAN'; statusColor = '#ffab00'; }
-                        else if (statusClass === 'maintenance') { statusText = 'MAINTENANCE'; statusColor = '#ff3b3b'; }
-
-                        document.getElementById('chatStatus').textContent = statusText;
-                        document.getElementById('chatStatus').style.color = statusColor;
-                        document.querySelector('.chat-popup-dot').style.color = statusColor;
-                        document.getElementById('chatUserName').textContent = "Admin";
-
-                        renderUserMessages(id);
-                        chatPopup.dataset.activeTableId = id;
-
-                        chatOverlay.classList.add('active');
-                        chatPopup.classList.add('active');
                     }
                 });
             });
-
-            function closeChatPopup() {
-                chatOverlay.classList.remove('active');
-                chatPopup.classList.remove('active');
-                chatPopup.dataset.activeTableId = '';
-            }
-
-            if (chatCloseBtn) chatCloseBtn.addEventListener('click', closeChatPopup);
-            if (chatOverlay) chatOverlay.addEventListener('click', closeChatPopup);
-
-            if (chatSendBtn) {
-                chatSendBtn.addEventListener('click', () => {
-                    const text = chatInput.value.trim();
-                    const tableId = chatPopup.dataset.activeTableId;
-                    if (!text || !tableId) return;
-
-                    const now = new Date();
-                    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-
-                    if (!userChatData[tableId]) userChatData[tableId] = { messages: [] };
-                    userChatData[tableId].messages.push({ from: 'user', text: text, time: timeStr });
-
-                    // Notify admin there is an unread message
-                    userChatData[tableId].hasUnreadForAdmin = true;
-
-                    localStorage.setItem('billiard_chat_history', JSON.stringify(userChatData));
-
-                    renderUserMessages(tableId);
-                    chatInput.value = '';
-                });
-
-                chatInput.addEventListener('keypress', function (e) {
-                    if (e.key === 'Enter') {
-                        chatSendBtn.click();
-                    }
-                });
-            }
-
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'billiard_chat_history') {
-                    userChatData = JSON.parse(e.newValue);
-                    updateUserBadges();
-
-                    const activeId = chatPopup.dataset.activeTableId;
-                    if (activeId && chatPopup.classList.contains('active')) {
-                        if (userChatData[activeId] && userChatData[activeId].hasUnreadForUser) {
-                            userChatData[activeId].hasUnreadForUser = false;
-                            localStorage.setItem('billiard_chat_history', JSON.stringify(userChatData));
-                            updateUserBadges();
-                        }
-                        renderUserMessages(activeId);
-                    }
-                }
-            });
-
-            // Initialize badges on load
-            updateUserBadges();
 
             timeSlots.forEach(slot => {
                 slot.addEventListener('click', () => {

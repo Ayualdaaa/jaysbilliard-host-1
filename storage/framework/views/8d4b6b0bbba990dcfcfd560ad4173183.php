@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="<?php echo e(asset('css/css_page/css_interaksi component/akhiri.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('css/css_page/dashboard.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('css/css_page/css_interaksi component/chat.css')); ?>">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 </head>
 
 <body>

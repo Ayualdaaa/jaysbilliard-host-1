@@ -37,11 +37,13 @@ body {
     top: 0;
     left: 0;
     bottom: 0;
-    z-index: 50;
+    z-index: 101;
+    overflow-y: auto;
 }
 
 .adm-sidebar-top {
     flex: 1;
+    overflow-y: auto;
 }
 
 /* Brand */
@@ -532,32 +534,35 @@ body {
 
 /* ═══════════════════════════════ MOBILE RESPONSIVE ═══════════════════════════════ */
 @media (max-width: 1024px) {
-    .adm-sidebar {
-        width: 80px;
+    .adm-sidebar, .adm-sidebar.collapsed {
+        width: 80px !important;
     }
 
     .adm-sidebar .adm-brand-text,
     .adm-sidebar .adm-nav-link span,
-    .adm-sidebar .adm-logout-btn span {
-        display: none;
+    .adm-sidebar .adm-logout-btn span,
+    .adm-sidebar.collapsed .adm-brand-text,
+    .adm-sidebar.collapsed .adm-nav-link span,
+    .adm-sidebar.collapsed .adm-logout-btn span {
+        display: none !important;
     }
 
-    .adm-sidebar .adm-brand {
-        justify-content: center;
-        padding: 1.25rem 0.5rem;
+    .adm-sidebar .adm-brand, .adm-sidebar.collapsed .adm-brand {
+        justify-content: center !important;
+        padding: 1.25rem 0.5rem !important;
     }
 
-    .adm-sidebar .adm-nav {
-        padding: 0 0.85rem;
+    .adm-sidebar .adm-nav, .adm-sidebar.collapsed .adm-nav {
+        padding: 0 0.85rem !important;
     }
 
-    .adm-sidebar .adm-nav-link {
-        justify-content: center;
-        padding: 0.85rem;
+    .adm-sidebar .adm-nav-link, .adm-sidebar.collapsed .adm-nav-link {
+        justify-content: center !important;
+        padding: 0.85rem !important;
     }
 
-    .adm-sidebar .adm-logout-btn {
-        padding: 0.85rem;
+    .adm-sidebar .adm-logout-btn, .adm-sidebar.collapsed .adm-logout-btn {
+        padding: 0.85rem !important;
     }
 
     .adm-main {
@@ -578,26 +583,52 @@ body {
 }
 
 @media (max-width: 768px) {
-    .adm-sidebar {
+    .adm-sidebar, .adm-sidebar.collapsed {
         position: fixed;
-        left: -230px;
-        width: 230px;
-        transition: left 0.3s ease;
-        z-index: 100;
+        left: -260px;
+        width: 260px !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        height: 100dvh;
     }
 
-    .adm-sidebar.mobile-open {
+    .adm-sidebar.mobile-open, .adm-sidebar.collapsed.mobile-open {
         left: 0;
     }
 
     .adm-sidebar.mobile-open .adm-brand-text,
     .adm-sidebar.mobile-open .adm-nav-link span,
-    .adm-sidebar.mobile-open .adm-logout-btn span {
-        display: block;
+    .adm-sidebar.mobile-open .adm-logout-btn span,
+    .adm-sidebar.collapsed.mobile-open .adm-brand-text,
+    .adm-sidebar.collapsed.mobile-open .adm-nav-link span,
+    .adm-sidebar.collapsed.mobile-open .adm-logout-btn span {
+        display: block !important;
+        opacity: 1 !important;
+    }
+    
+    .adm-sidebar.mobile-open .adm-brand, .adm-sidebar.collapsed.mobile-open .adm-brand {
+        justify-content: flex-start !important;
+        padding: 1.25rem 1rem 1.75rem !important;
+    }
+
+    .adm-sidebar.mobile-open .adm-nav-link, .adm-sidebar.collapsed.mobile-open .adm-nav-link {
+        justify-content: flex-start !important;
+        padding: 0.72rem 0.85rem !important;
+        gap: 0.7rem !important;
+    }
+
+    .adm-sidebar.mobile-open .adm-logout-btn, .adm-sidebar.collapsed.mobile-open .adm-logout-btn {
+        justify-content: center !important;
+        padding: 0.9rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .adm-collapse-btn {
+        display: none !important;
     }
 
     .adm-main {
-        margin-left: 0;
+        margin-left: 0 !important;
     }
 
     .adm-topbar {
@@ -637,7 +668,7 @@ body {
         bottom: 0;
         background: rgba(0, 0, 0, 0.7);
         backdrop-filter: blur(4px);
-        z-index: 99;
+        z-index: 999;
         display: none;
         opacity: 0;
         transition: opacity 0.3s ease;

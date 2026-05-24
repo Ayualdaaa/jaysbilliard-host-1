@@ -275,6 +275,44 @@
         }
 
         .btn-update:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0, 209, 255, 0.3); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .adm-edit-grid {
+                grid-template-columns: 1fr;
+            }
+            .adm-preview-col {
+                order: 2;
+            }
+            .adm-form-main-col {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-group[style*="grid-column"] {
+                grid-column: span 1 !important;
+            }
+            .status-options {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .form-actions {
+                flex-direction: column-reverse;
+                gap: 1rem;
+            }
+            .btn-update, .btn-cancel {
+                width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            .adm-form-card {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>

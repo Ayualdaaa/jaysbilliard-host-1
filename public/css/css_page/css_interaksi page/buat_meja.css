@@ -452,3 +452,53 @@ select.form-input {
 .is-invalid {
     border-color: rgba(255, 82, 82, 0.3) !important;
 }
+
+/* ═══════════════════════════════ RESPONSIVE ═══════════════════════════════ */
+@media (max-width: 1024px) {
+    .adm-meja-form-grid {
+        grid-template-columns: 1fr;
+    }
+    .adm-form-side {
+        order: 2;
+    }
+    .adm-form-main {
+        order: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    .form-group[style*="grid-column"] {
+        grid-column: span 1 !important;
+    }
+    .form-group--status {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .status-radio-group {
+        width: 100%;
+        gap: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .adm-form-footer {
+        flex-direction: column-reverse;
+        gap: 1rem;
+    }
+    .btn-submit {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .btn-cancel {
+        width: 100%;
+        text-align: center;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+    .upload-box {
+        padding: 2.5rem 1rem;
+    }
+}

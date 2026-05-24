@@ -1,4 +1,4 @@
-// Chat Logic for Admin Dashboard
+// Chat Logic for Admin Dashboard with Database Sync
 let chatData = JSON.parse(localStorage.getItem('billiard_chat_history'));
 
 if (!chatData) {
@@ -15,6 +15,62 @@ let activeAdminTableId = null;
 
 function saveChatData() {
     localStorage.setItem('billiard_chat_history', JSON.stringify(chatData));
+}
+
+// Fetch CSRF Token from meta tag
+function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : '';
+}
+
+// Background Sync with DB
+function syncChatWithDatabase() {
+    const token = getCsrfToken();
+    if (!token) return;
+
+    fetch('/chat/sync', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token
+        },
+        body: JSON.stringify({ history: chatData })
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success && res.history) {
+            chatData = res.history;
+            saveChatData();
+            updateAdminBadges();
+            if (activeAdminTableId) {
+                renderMessages(activeAdminTableId);
+            }
+        }
+    })
+    .catch(err => console.error('Admin chat sync error:', err));
+}
+
+function markTableAsRead(id) {
+    const token = getCsrfToken();
+    if (!token) return;
+
+    fetch(`/chat/${id}/read`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': token
+        }
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            if (chatData[id]) {
+                chatData[id].hasUnreadForAdmin = false;
+                saveChatData();
+                updateAdminBadges();
+            }
+        }
+    })
+    .catch(err => console.error('Admin mark read error:', err));
 }
 
 function updateAdminBadges() {
@@ -44,9 +100,7 @@ function openChat(mejaId) {
     if (!data) return;
     
     // Clear unread flag for admin when opening chat
-    data.hasUnreadForAdmin = false;
-    saveChatData();
-    updateAdminBadges();
+    markTableAsRead(mejaId);
 
     document.getElementById('chatTableName').textContent = data.table;
     document.getElementById('chatStatus').textContent = data.status;
@@ -61,6 +115,11 @@ function openChat(mejaId) {
     
     const body = document.getElementById('chatBody');
     body.scrollTop = body.scrollHeight;
+
+    setTimeout(() => {
+        const input = document.getElementById('chatInput');
+        if (input) input.focus();
+    }, 150);
 }
 
 function renderMessages(mejaId) {
@@ -113,11 +172,14 @@ if (chatSendBtn) {
         if (!chatInput.value.trim() || !activeAdminTableId) return;
         
         const text = chatInput.value.trim();
+        chatInput.value = ''; 
+
         const now = new Date(); 
         const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
         
         if (!chatData[activeAdminTableId]) chatData[activeAdminTableId] = { messages: [] };
         
+        // Optimistically render locally
         chatData[activeAdminTableId].messages.push({
             from: 'admin',
             text: text,
@@ -129,8 +191,29 @@ if (chatSendBtn) {
         
         saveChatData();
         renderMessages(activeAdminTableId);
-        
-        chatInput.value = ''; 
+
+        // Save to database via dedicated endpoint
+        const token = getCsrfToken();
+        if (!token) return;
+
+        fetch('/chat/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token
+            },
+            body: JSON.stringify({
+                table_id: activeAdminTableId,
+                message: text
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                syncChatWithDatabase();
+            }
+        })
+        .catch(err => console.error('Admin send message error:', err));
     });
 
     chatInput.addEventListener('keypress', function (e) {
@@ -140,24 +223,22 @@ if (chatSendBtn) {
     });
 }
 
-// Listen for updates from User dashboard
+// Listen for updates from User dashboard (if on same page/browser profile)
 window.addEventListener('storage', (e) => {
     if (e.key === 'billiard_chat_history') {
         chatData = JSON.parse(e.newValue);
-        
         updateAdminBadges();
 
         if (activeAdminTableId) {
-            // Check if active chat needs to clear unread
             if (chatData[activeAdminTableId].hasUnreadForAdmin) {
-                chatData[activeAdminTableId].hasUnreadForAdmin = false;
-                saveChatData();
-                updateAdminBadges();
+                markTableAsRead(activeAdminTableId);
             }
             renderMessages(activeAdminTableId);
         }
     }
 });
 
-// Initialize badges on load
-document.addEventListener('DOMContentLoaded', updateAdminBadges);
+// Initial Setup & Polling Loop
+updateAdminBadges();
+syncChatWithDatabase();
+setInterval(syncChatWithDatabase, 3000);

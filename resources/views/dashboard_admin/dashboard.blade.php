@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ asset('css/css_page/css_interaksi component/akhiri.css') }}">
     <link rel="stylesheet" href="{{ asset('css/css_page/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/css_page/css_interaksi component/chat.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
