@@ -7,6 +7,11 @@
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+}
+
+html {
+    -webkit-text-size-adjust: 100%; /* Prevent iOS text size adjust after orientation change */
 }
 
 body {
@@ -14,6 +19,7 @@ body {
     background-color: #080a0f;
     color: #ffffff;
     min-height: 100vh;
+    min-height: -webkit-fill-available; /* iOS height fix */
     overflow-x: hidden;
 }
 
@@ -21,6 +27,7 @@ body {
 .adm-layout {
     display: flex;
     min-height: 100vh;
+    min-height: -webkit-fill-available;
 }
 
 /* ═══════════════════════════════ SIDEBAR ═══════════════════════════════ */
@@ -39,11 +46,14 @@ body {
     bottom: 0;
     z-index: 101;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .adm-sidebar-top {
     flex: 1;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Brand */

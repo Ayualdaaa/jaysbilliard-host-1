@@ -8,6 +8,7 @@
 
 .adm-content {
     padding: 1.5rem 2.5rem 3rem;
+    padding-bottom: calc(3rem + env(safe-area-inset-bottom));
 }
 
 /* ═══════════════════════════════ STAT CARDS ═══════════════════════════════ */
