@@ -144,6 +144,16 @@ body {
     background: rgba(255, 255, 255, 0.04);
 }
 
+.adm-nav-link svg {
+    flex-shrink: 0;
+}
+
+.adm-nav-link span {
+    white-space: normal;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
 .adm-nav-link.active {
     color: #ffffff;
     background: rgba(0, 229, 255, 0.12);
@@ -187,6 +197,16 @@ body {
     background: #1e2227;
     border-color: rgba(255, 255, 255, 0.15);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.adm-logout-btn svg {
+    flex-shrink: 0;
+}
+
+.adm-logout-btn span {
+    white-space: normal;
+    line-height: 1.4;
+    word-break: break-word;
 }
 
 /* Sidebar Transitions */
