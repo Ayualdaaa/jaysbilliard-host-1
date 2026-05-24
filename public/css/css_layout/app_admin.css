@@ -624,6 +624,8 @@ body {
     .adm-sidebar.collapsed.mobile-open .adm-logout-btn span {
         display: block !important;
         opacity: 1 !important;
+        flex: 1;
+        text-align: left !important;
     }
     
     .adm-sidebar.mobile-open .adm-brand, .adm-sidebar.collapsed.mobile-open .adm-brand {
@@ -633,17 +635,18 @@ body {
 
     .adm-sidebar.mobile-open .adm-nav-link, .adm-sidebar.collapsed.mobile-open .adm-nav-link {
         justify-content: flex-start !important;
-        padding: 0.72rem 0.85rem !important;
-        gap: 0.7rem !important;
+        padding: 0.75rem 1rem !important;
+        gap: 0.85rem !important;
+        text-align: left !important;
     }
 
     .adm-sidebar.mobile-open .adm-logout-btn, .adm-sidebar.collapsed.mobile-open .adm-logout-btn {
-        justify-content: center !important;
-        padding: 0.9rem !important;
-        gap: 0.75rem !important;
+        justify-content: flex-start !important;
+        padding: 0.9rem 1rem !important;
+        gap: 0.85rem !important;
     }
 
-    .adm-collapse-btn {
+    .adm-sidebar .adm-collapse-btn, .adm-sidebar.collapsed .adm-collapse-btn {
         display: none !important;
     }
 
