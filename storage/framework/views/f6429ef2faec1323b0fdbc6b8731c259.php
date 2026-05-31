@@ -134,7 +134,7 @@
                                     </div>
                                 </div>
                                 <div class="card-details">
-                                    <span class="type-text"><?php echo e(strtoupper($table->type)); ?></span>
+                                    <span class="type-text"><?php echo e(strtoupper($table->type === 'regular' ? 'standar' : $table->type)); ?></span>
                                     <span style="color: rgba(255,255,255,0.1);">|</span>
                                     <span class="cap-text"><?php echo e($table->capacity); ?> orang</span>
                                 </div>

@@ -275,6 +275,44 @@
         }
 
         .btn-update:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0, 209, 255, 0.3); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .adm-edit-grid {
+                grid-template-columns: 1fr;
+            }
+            .adm-preview-col {
+                order: 2;
+            }
+            .adm-form-main-col {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-group[style*="grid-column"] {
+                grid-column: span 1 !important;
+            }
+            .status-options {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .form-actions {
+                flex-direction: column-reverse;
+                gap: 1rem;
+            }
+            .btn-update, .btn-cancel {
+                width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            .adm-form-card {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -318,7 +356,7 @@
                                             </div>
                                         </div>
                                         <div class="preview-details">
-                                            <span id="viewType"><?php echo e(strtoupper($table->type)); ?></span>
+                                            <span id="viewType"><?php echo e(strtoupper($table->type === 'regular' ? 'standar' : $table->type)); ?></span>
                                             <span>|</span>
                                             <span id="viewCap"><?php echo e($table->capacity); ?> ORANG</span>
                                         </div>
@@ -353,13 +391,7 @@
                                         <label class="form-label">Nama / Nomor Meja</label>
                                         <input type="text" name="name" id="inpName" class="form-input" value="<?php echo e($table->name); ?>" required>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Tipe Meja</label>
-                                        <select name="type" id="inpType" class="form-input">
-                                            <option value="regular" <?php echo e($table->type == 'regular' ? 'selected' : ''); ?>>Standar / Regular</option>
-                                            <option value="vip" <?php echo e($table->type == 'vip' ? 'selected' : ''); ?>>VIP Exclusive</option>
-                                        </select>
-                                    </div>
+                                    <input type="hidden" name="type" id="inpType" value="<?php echo e($table->type); ?>">
                                 </div>
 
                                 <div class="form-row">

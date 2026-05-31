@@ -13,6 +13,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\AccountController;
 
 // Webhook Midtrans (No CSRF needed, see bootstrap/app.php)
 Route::post('/api/webhook/midtrans', [WebhookController::class, 'midtransHandler']);
@@ -54,6 +55,8 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin-dashboard', [AdminDashboardController::class , 'index'])->name('admin.dashboard');
     Route::get('/admin/meja', [MejaController::class, 'index'])->name('admin.meja.index');
     Route::get('/admin/history', [AdminDashboardController::class, 'history'])->name('admin.history');
+    Route::get('/admin/laporan', [AdminDashboardController::class, 'laporan'])->name('admin.laporan');
+    Route::get('/admin/laporan/export', [AdminDashboardController::class, 'exportLaporanPdf'])->name('admin.laporan.export');
     Route::get('/admin/history/export', [AdminDashboardController::class, 'exportPdf'])->name('admin.history.export');
     Route::get('/admin/notifications/check', [AdminDashboardController::class, 'checkNotifications'])->name('admin.notifications.check');
     Route::post('/admin/booking/{id}/confirm', [AdminDashboardController::class, 'confirmBooking'])->name('admin.booking.confirm');
@@ -84,6 +87,16 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/stock', [StockController::class, 'index'])->name('admin.stock.index');
     Route::post('/admin/stock', [StockController::class, 'store'])->name('admin.stock.store');
     Route::get('/admin/stock/export', [StockController::class, 'exportPdf'])->name('admin.stock.export');
+
+    // Admin Account Management
+    Route::resource('admin/akun', AccountController::class)->names([
+        'index' => 'admin.akun.index',
+        'create' => 'admin.akun.create',
+        'store' => 'admin.akun.store',
+        'edit' => 'admin.akun.edit',
+        'update' => 'admin.akun.update',
+        'destroy' => 'admin.akun.destroy',
+    ]);
 });
 
 // User Dashboard & Booking (Requires 'user' Middleware)

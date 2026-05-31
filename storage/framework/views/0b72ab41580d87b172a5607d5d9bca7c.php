@@ -35,6 +35,7 @@
                                 $startFloat = intval($startParts[0]) + (intval($startParts[1]) / 60);
                                 $endParts = explode(':', $b->end_time);
                                 $endFloat = intval($endParts[0]) + (intval($endParts[1]) / 60);
+                                if ($endFloat <= $startFloat) { $endFloat += 24; }
                                 return $nowFloat >= $startFloat && $nowFloat < $endFloat;
                             })->first();
 
@@ -508,8 +509,9 @@
                             return tableData.bookings.some(b => {
                                 if (b.booking_date !== selectedDateStr) return false;
                                 
-                                const bStart = timeToFloat(b.start_time);
-                                const bEnd = timeToFloat(b.end_time);
+                                let bStart = timeToFloat(b.start_time);
+                                let bEnd = timeToFloat(b.end_time);
+                                if (bEnd <= bStart) bEnd += 24;
                                 
                                 return slotStart < bEnd && slotEnd > bStart;
                             });
@@ -589,8 +591,9 @@
                             }
 
                             // If a slot is selected, check for interval overlap
-                            const bStart = timeToFloat(b.start_time);
-                            const bEnd = timeToFloat(b.end_time);
+                            let bStart = timeToFloat(b.start_time);
+                            let bEnd = timeToFloat(b.end_time);
+                            if (bEnd <= bStart) bEnd += 24;
                             return selectedStartHour < bEnd && selectedEndHour > bStart;
                         });
 
@@ -677,7 +680,7 @@
                                                             <img src="${table.image}" style="width: 45px; height: 45px; border-radius: 8px; object-fit: cover;">
                                                             <div class="item-info">
                                                                 <div style="font-size: 0.9rem; font-weight: 800; color: #fff;">${table.name}</div>
-                                                                <div style="font-size: 0.7rem; color: #8a8a98;">${table.type === 'vip' ? 'VIP' : 'Regular'} • ${table.capacity} Orang</div>
+                                                                <div style="font-size: 0.7rem; color: #8a8a98;">${table.type === 'vip' ? 'VIP' : 'Standar'} • ${table.capacity} Orang</div>
                                                             </div>
                                                         </div>
                                                         <div style="text-align: right;">
@@ -1008,8 +1011,9 @@
                         tableData.bookings.forEach(b => {
                             if (b.booking_date !== selectedDateStr) return;
 
-                            const bStart = timeToFloat(b.start_time);
-                            const bEnd = timeToFloat(b.end_time);
+                            let bStart = timeToFloat(b.start_time);
+                            let bEnd = timeToFloat(b.end_time);
+                            if (bEnd <= bStart) bEnd += 24;
 
                             if (selectedStartHour < bEnd && selectedEndHour > bStart) {
                                 hasOverlapConflict = true;

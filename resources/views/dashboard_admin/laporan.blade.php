@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Manajemen Transaksi — Jay's Billiard</title>
+    <title>Laporan Penghasilan — Jay's Billiard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="{{ asset('css/css_layout/app_admin.css') }}">
@@ -34,8 +34,8 @@
         <main class="adm-main">
             {{-- Top Bar --}}
             @include('component.c_dashboard.topbar.topbar', [
-                'topbar_title' => 'Manajemen Transaksi',
-                'topbar_sub' => 'Pantau semua arus kas dan transaksi pembayaran'
+                'topbar_title' => 'Laporan Penghasilan',
+                'topbar_sub' => 'Laporan transaksi dan pendapatan kasir'
             ])
 
             <div class="adm-content adm-history-content">
@@ -80,19 +80,40 @@
                 </div>
 
                 {{-- ═══════ SEARCH & ACTIONS ═══════ --}}
-                <div class="adm-history-actions">
-                    <div class="adm-search-wrap">
+                <div class="adm-history-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div class="adm-search-wrap" style="flex: 1; min-width: 250px;">
                         <svg class="adm-search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                         <input type="text" class="adm-search-input" placeholder="Cari ID Transaksi atau Pelanggan">
                     </div>
-                    <div class="adm-filter-group">
-                        <button class="btn-filter">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-                            Filter
-                        </button>
-                        <button class="btn-export">
-                            Laporan Keuangan
-                        </button>
+                    
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <form action="{{ route('admin.laporan') }}" method="GET" style="display: flex; gap: 8px; align-items: center;">
+                            <span style="color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500;">Pendapatan</span>
+                            <select name="month" class="form-control" style="width: auto; padding: 8px 32px 8px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff; font-size: 14px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'white\' viewBox=\'0 0 16 16\'><path d=\'M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/></svg>'); background-repeat: no-repeat; background-position: right 10px center;" onchange="this.form.submit()">
+                                @php
+                                    $months = ['01'=>'Januari', '02'=>'Februari', '03'=>'Maret', '04'=>'April', '05'=>'Mei', '06'=>'Juni', '07'=>'Juli', '08'=>'Agustus', '09'=>'September', '10'=>'Oktober', '11'=>'November', '12'=>'Desember'];
+                                    $selectedMonth = request('month', date('m'));
+                                @endphp
+                                @foreach($months as $num => $name)
+                                    <option value="{{ $num }}" style="background: #1a1d24; color: #fff;" {{ $selectedMonth == $num ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            
+                            <select name="year" class="form-control" style="width: auto; padding: 8px 32px 8px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff; font-size: 14px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'white\' viewBox=\'0 0 16 16\'><path d=\'M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/></svg>'); background-repeat: no-repeat; background-position: right 10px center;" onchange="this.form.submit()">
+                                @php
+                                    $currentYear = date('Y');
+                                    $selectedYear = request('year', $currentYear);
+                                @endphp
+                                @for($y = $currentYear + 1; $y >= 2023; $y--)
+                                    <option value="{{ $y }}" style="background: #1a1d24; color: #fff;" {{ $selectedYear == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </form>
+                        
+                        <a href="{{ route('admin.laporan.export', ['month' => request('month', date('m')), 'year' => request('year', date('Y'))]) }}" class="btn-export-pdf" style="display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px 16px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; font-size: 13px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            EKSPOR PDF
+                        </a>
                     </div>
                 </div>
 
@@ -117,12 +138,34 @@
                                     @php
                                         $initial = strtoupper(substr($item->customer_name, 0, 1));
                                         $status = strtolower($item->status);
-                                        $isSuccess = in_array($status, ['paid', 'completed', 'confirmed', 'booked', 'payment']);
-                                        $statusHtml = $isSuccess ? '<span class="status-pill paid">Berhasil</span>' : '<span class="status-pill failed">Gagal</span>';
-                                        $amountClass = $isSuccess ? 'income-positive' : 'income-negative';
+                                        if (in_array($status, ['paid', 'completed', 'confirmed', 'lunas', 'selesai', 'booked', 'payment'])) {
+                                            $statusHtml = '<span class="status-pill paid" style="background: rgba(0,229,255,0.1); color: #00e5ff; border-color: rgba(0,229,255,0.2);">Berhasil</span>';
+                                            $amountClass = 'income-positive';
+                                        } elseif ($status == 'pending') {
+                                            $statusHtml = '<span class="status-pill pending" style="background: rgba(255,179,0,0.1); color: #ffb300; border-color: rgba(255,179,0,0.2);">Pending</span>';
+                                            $amountClass = 'income-negative';
+                                        } else {
+                                            $statusHtml = '<span class="status-pill failed">Gagal</span>';
+                                            $amountClass = 'income-negative';
+                                        }
                                         
                                         $fnbItems = $item->orders;
                                         $hasFnb = $fnbItems && $fnbItems->count() > 0;
+                                        
+                                        $allDetails = collect();
+                                        if($hasFnb) {
+                                            foreach($fnbItems as $order) {
+                                                foreach($order->details as $detail) {
+                                                    if($detail->menu) {
+                                                        $allDetails->push([
+                                                            'name' => $detail->menu->name,
+                                                            'quantity' => $detail->quantity,
+                                                            'price' => $detail->price
+                                                        ]);
+                                                    }
+                                                }
+                                            }
+                                        }
                                         
                                         try {
                                             $start = \Carbon\Carbon::parse($item->booking_date . ' ' . $item->start_time);
@@ -157,7 +200,7 @@
                                         <td>{!! $statusHtml !!}</td>
                                         <td class="col-action">
                                             <div class="adm-action-buttons">
-                                                <button type="button" class="btn-action view" onclick='showOrderDetails("{{ htmlspecialchars($item->customer_name, ENT_QUOTES) }}", "{{ \Carbon\Carbon::parse($item->booking_date)->format('d M Y') }}", "{{ \Carbon\Carbon::parse($item->start_time)->format('H:i') }}", "{{ $item->table->name ?? 'N/A' }}", "{{ $item->payment_method ?? 'QRIS' }}", "{{ $duration }}", {{ json_encode($fnbItems->map(function($o) { return ["name" => $o->menu_name, "quantity" => $o->quantity, "price" => $o->price ?? 0]; })) }}, "Rp {{ number_format($item->total_price, 0, ',', '.') }}")' title="View Transaction">
+                                                <button type="button" class="btn-action view" style="background: transparent; color: #ffb300;" onclick='showOrderDetails("{{ htmlspecialchars($item->customer_name, ENT_QUOTES) }}", "{{ \Carbon\Carbon::parse($item->booking_date)->format('d M Y') }}", "{{ \Carbon\Carbon::parse($item->start_time)->format('H:i') }}", "{{ $item->table->name ?? 'N/A' }}", "{{ $item->payment_method ?? 'QRIS' }}", "{{ $duration }}", {!! json_encode($allDetails) !!}, "Rp {{ number_format($item->total_price, 0, ',', '.') }}")' title="View Transaction">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                                 </button>
                                             </div>

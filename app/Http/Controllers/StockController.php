@@ -10,10 +10,17 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class StockController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $menus = Menu::orderBy('name')->get();
-        $transactions = StockTransaction::with('menu')->latest()->paginate(10);
+        
+        $query = StockTransaction::with('menu')->latest();
+        if ($request->has('month') && $request->month) {
+            $month = $request->month;
+            $year = $request->has('year') ? $request->year : date('Y');
+            $query->whereMonth('created_at', $month)->whereYear('created_at', $year);
+        }
+        $transactions = $query->paginate(10)->withQueryString();
         
         return view('dashboard_admin.stock.index', compact('menus', 'transactions'));
     }
@@ -44,10 +51,17 @@ class StockController extends Controller
         return back()->with('success', 'Transaksi stok berhasil dicatat.');
     }
 
-    public function exportPdf()
+    public function exportPdf(Request $request)
     {
         $menus = Menu::orderBy('name')->get();
-        $transactions = StockTransaction::with('menu')->latest()->get();
+        
+        $query = StockTransaction::with('menu')->latest();
+        if ($request->has('month') && $request->month) {
+            $month = $request->month;
+            $year = $request->has('year') ? $request->year : date('Y');
+            $query->whereMonth('created_at', $month)->whereYear('created_at', $year);
+        }
+        $transactions = $query->get();
         
         $pdf = Pdf::loadView('dashboard_admin.stock.pdf', compact('menus', 'transactions'));
         

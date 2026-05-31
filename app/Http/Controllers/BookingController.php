@@ -47,8 +47,27 @@ class BookingController extends Controller
                 ->where('booking_date', $validated['booking_date'])
                 ->whereIn('status', ['pending', 'booked', 'dipesan', 'confirmed', 'paid', 'lunas', 'completed'])
                 ->where(function ($query) use ($validated) {
-                    $query->where('start_time', '<', $validated['end_time'])
-                          ->where('end_time', '>', $validated['start_time']);
+                    $newStart = $validated['start_time'];
+                    $newEnd = $validated['end_time'];
+
+                    if ($newStart > $newEnd) {
+                        $query->where(function($q) use ($newStart, $newEnd) {
+                            $q->where('start_time', '<', $newEnd)
+                              ->orWhere('end_time', '>', $newStart);
+                        });
+                    } else {
+                        $query->where(function ($q) use ($newStart, $newEnd) {
+                            $q->whereRaw('start_time < end_time')
+                              ->where('start_time', '<', $newEnd)
+                              ->where('end_time', '>', $newStart);
+                        })->orWhere(function ($q) use ($newStart, $newEnd) {
+                            $q->whereRaw('start_time > end_time')
+                              ->where(function($q2) use ($newStart, $newEnd) {
+                                  $q2->where('start_time', '<', $newEnd)
+                                     ->orWhere('end_time', '>', $newStart);
+                              });
+                        });
+                    }
                 })
                 ->exists();
 

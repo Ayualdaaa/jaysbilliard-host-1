@@ -113,6 +113,41 @@ class AdminDashboardController extends Controller
         return view('dashboard_admin.transaksi', compact('transactions'));
     }
 
+    public function laporan(Request $request)
+    {
+        $query = \App\Models\Booking::with(['table', 'user', 'orders.details.menu'])->latest();
+        
+        $m = request('month', date('m'));
+        $y = request('year', date('Y'));
+        
+        $query->whereMonth('booking_date', $m)->whereYear('booking_date', $y);
+        
+        $transactions = $query->get();
+        return view('dashboard_admin.laporan', compact('transactions'));
+    }
+
+    public function exportLaporanPdf(Request $request)
+    {
+        $query = \App\Models\Booking::with(['table', 'user', 'orders.details.menu'])->latest();
+        
+        $m = request('month', date('m'));
+        $y = request('year', date('Y'));
+        
+        $query->whereMonth('booking_date', $m)->whereYear('booking_date', $y);
+        
+        $bookings = $query->get();
+        
+        $totalPendapatan = $bookings->whereIn('status', ['paid', 'completed', 'confirmed', 'booked', 'payment', 'lunas', 'selesai'])->sum('total_price');
+        
+        $months = ['01'=>'Januari', '02'=>'Februari', '03'=>'Maret', '04'=>'April', '05'=>'Mei', '06'=>'Juni', '07'=>'Juli', '08'=>'Agustus', '09'=>'September', '10'=>'Oktober', '11'=>'November', '12'=>'Desember'];
+        $monthName = $months[$m] ?? $m;
+        
+        $pdf = Pdf::loadView('dashboard_admin.laporan_pdf', compact('bookings', 'totalPendapatan', 'monthName', 'y'))
+                  ->setPaper('a4', 'landscape');
+                  
+        return $pdf->download('laporan_penghasilan_' . $m . '_' . $y . '.pdf');
+    }
+
     public function confirmBooking($id)
     {
         $booking = \App\Models\Booking::findOrFail($id);

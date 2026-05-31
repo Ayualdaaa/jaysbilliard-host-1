@@ -227,7 +227,7 @@
                                                      <?php endif; ?>
                                                  </span></div>
                                                 <div style="margin-top: auto;">
-                                                     <div class="adm-info-row"><span class="adm-label">DIPESAN JAM</span><span class="adm-value"><?php echo e($activeBooking->created_at->format('H:i')); ?></span></div>
+                                                     <div class="adm-info-row"><span class="adm-label">DIPESAN JAM</span><span class="adm-value"><?php echo e(\Carbon\Carbon::parse($activeBooking->created_at)->timezone('Asia/Jakarta')->format('H:i')); ?></span></div>
                                                 </div>
                                             <?php endif; ?>
                                         <?php else: ?>

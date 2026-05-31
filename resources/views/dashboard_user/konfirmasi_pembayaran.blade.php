@@ -18,7 +18,7 @@
                     <img src="{{ asset('images/hero-bg.png') }}" alt="Meja" class="table-img" id="konfirmasi-img">
                     <div class="table-text">
                         <div class="table-name" id="konfirmasi-name">Pilih Meja <span class="table-capacity" id="konfirmasi-ppl">0 Orang</span></div>
-                        <div class="table-type" id="konfirmasi-type">Regular</div>
+                        <div class="table-type" id="konfirmasi-type">Standar</div>
                     </div>
                 </div>
             </div>
@@ -174,7 +174,7 @@
                                 <img src="${table.image}" class="table-img">
                                 <div class="table-text">
                                     <div class="table-name">${table.name} <span class="table-capacity">${table.capacity} Orang</span></div>
-                                    <div class="table-type">${table.type === 'vip' ? 'VIP' : 'Regular'}</div>
+                                    <div class="table-type">${table.type === 'vip' ? 'VIP' : 'Standar'}</div>
                                 </div>
                             </div>
                         `;

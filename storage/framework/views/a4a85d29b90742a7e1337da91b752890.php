@@ -175,8 +175,30 @@
                 
                 <div class="adm-history-actions" style="margin-top: 32px;">
                     <h3 style="margin: 0; font-size: 16px; color: #fff;">Riwayat Transaksi Stok</h3>
-                    <div style="display: flex; gap: 12px;">
-                        <a href="<?php echo e(route('admin.stock.export')); ?>" class="btn-export-pdf">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                    <form action="<?php echo e(route('admin.stock.index')); ?>" method="GET" style="display: flex; gap: 8px; align-items: center;">
+                        <span style="color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500;">Pendapatan</span>
+                        <select name="month" class="form-control" style="width: auto; padding: 8px 32px 8px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff; font-size: 14px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'white\' viewBox=\'0 0 16 16\'><path d=\'M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/></svg>'); background-repeat: no-repeat; background-position: right 10px center;" onchange="this.form.submit()">
+                            <?php
+                                $months = ['01'=>'Januari', '02'=>'Februari', '03'=>'Maret', '04'=>'April', '05'=>'Mei', '06'=>'Juni', '07'=>'Juli', '08'=>'Agustus', '09'=>'September', '10'=>'Oktober', '11'=>'November', '12'=>'Desember'];
+                                $selectedMonth = request('month', date('m'));
+                            ?>
+                            <?php $__currentLoopData = $months; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $num => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($num); ?>" style="background: #1a1d24; color: #fff;" <?php echo e($selectedMonth == $num ? 'selected' : ''); ?>><?php echo e($name); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                        
+                        <select name="year" class="form-control" style="width: auto; padding: 8px 32px 8px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #fff; font-size: 14px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'white\' viewBox=\'0 0 16 16\'><path d=\'M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/></svg>'); background-repeat: no-repeat; background-position: right 10px center;" onchange="this.form.submit()">
+                            <?php
+                                $currentYear = date('Y');
+                                $selectedYear = request('year', $currentYear);
+                            ?>
+                            <?php for($y = $currentYear + 1; $y >= 2023; $y--): ?>
+                                <option value="<?php echo e($y); ?>" style="background: #1a1d24; color: #fff;" <?php echo e($selectedYear == $y ? 'selected' : ''); ?>><?php echo e($y); ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </form>
+                    <a href="<?php echo e(route('admin.stock.export', ['month' => request('month', date('m')), 'year' => request('year', date('Y'))])); ?>" class="btn-export-pdf">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                             EKSPOR PDF
                         </a>
@@ -191,8 +213,9 @@
                                 <tr>
                                     <th style="width: 60px;">ID</th>
                                     <th>ITEM</th>
-                                    <th>JENIS</th>
-                                    <th>JUMLAH</th>
+                                    <th>MASUK</th>
+                                    <th>KELUAR</th>
+                                    <th>SISA STOK</th>
                                     <th>TANGGAL</th>
                                     <th>CATATAN</th>
                                 </tr>
@@ -202,18 +225,35 @@
                                     <tr>
                                         <td><?php echo e($transactions->firstItem() + $index); ?></td>
                                         <td style="font-weight: 700; color: #00e5ff;"><?php echo e($transaction->menu->name); ?></td>
-                                        <td>
-                                            <span class="stock-badge <?php echo e($transaction->type === 'in' ? 'stock-in' : 'stock-out'); ?>">
-                                                <?php echo e($transaction->type === 'in' ? 'MASUK' : 'KELUAR'); ?>
+                                        <td style="font-weight: 700; color: #2ed573;">
+                                            <?php if($transaction->type === 'in'): ?>
+                                                <?php echo e($transaction->quantity); ?>
 
-                                            </span>
+                                            <?php else: ?>
+                                                -
+                                            <?php endif; ?>
                                         </td>
-                                        <td style="font-weight: 700;"><?php echo e($transaction->quantity); ?></td>
+                                        <td style="font-weight: 700; color: #ff5252;">
+                                            <?php if($transaction->type === 'out'): ?>
+                                                <?php echo e($transaction->quantity); ?>
+
+                                            <?php else: ?>
+                                                -
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php
+                                                $sisaStok = \App\Models\StockTransaction::where('menu_id', $transaction->menu_id)
+                                                    ->where('id', '<=', $transaction->id)
+                                                    ->sum(\Illuminate\Support\Facades\DB::raw("CASE WHEN type = 'in' THEN quantity ELSE -quantity END"));
+                                            ?>
+                                            <span style="font-weight: 800; color: #fff;"><?php echo e($sisaStok); ?></span>
+                                        </td>
                                         <td><?php echo e($transaction->created_at->format('d M Y, H:i')); ?></td>
                                         <td style="color: rgba(255,255,255,0.5);"><?php echo e($transaction->note ?? '-'); ?></td>
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                    <tr><td colspan="6" style="text-align: center; padding: 60px; color: rgba(255,255,255,0.1);">Belum ada riwayat transaksi stok.</td></tr>
+                                    <tr><td colspan="7" style="text-align: center; padding: 60px; color: rgba(255,255,255,0.1);">Belum ada riwayat transaksi stok.</td></tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>

@@ -98,13 +98,7 @@
                                         <label class="form-label">Nomor/Nama Meja</label>
                                         <input type="text" name="name" id="nameInput" class="form-input @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Cth. Meja 0..." required>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Tipe Meja</label>
-                                        <select name="type" id="typeInput" class="form-input">
-                                            <option value="regular">Standar</option>
-                                            <option value="vip">VIP</option>
-                                        </select>
-                                    </div>
+                                    <input type="hidden" name="type" id="typeInput" value="regular">
                                 </div>
                                 <div class="form-row">
                                     <input type="hidden" name="price_per_hour" id="priceInput" value="0">

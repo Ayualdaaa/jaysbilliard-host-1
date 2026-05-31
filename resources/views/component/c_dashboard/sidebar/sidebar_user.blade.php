@@ -46,7 +46,7 @@
                     <path d="M18 11v9" />
                     <path d="M6 15h12" />
                 </svg>
-                <span>Meja</span>
+                <span>Pemesanan Meja</span>
             </a>
             <a href="{{ route('user.fnb') }}" class="adm-nav-link {{ Request::is('dashboard/fnb*') ? 'active' : '' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -55,15 +55,16 @@
                     <path d="M7 2v20" />
                     <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
                 </svg>
-                <span>Pesan Makanan dan Minuman</span>
+                <span>Pemesanan F&B</span>
             </a>
-            <a href="{{ route('user.history') }}" class="adm-nav-link {{ Request::is('dashboard/history*') ? 'active' : '' }}">
+            <a href="{{ route('user.history') }}"
+                class="adm-nav-link {{ Request::is('dashboard/history*') ? 'active' : '' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <span>History Booking</span>
+                <span>Riwayat Pesanan</span>
             </a>
         </nav>
     </div>
@@ -104,7 +105,7 @@
 
 {{-- REAL-TIME USER NOTIFICATION SCRIPT --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         let notifiedKeys = [];
         const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
 
@@ -127,10 +128,10 @@
                     let readKeys = [];
                     try {
                         readKeys = JSON.parse(localStorage.getItem('user_read_notification_keys')) || [];
-                    } catch(e) {
+                    } catch (e) {
                         readKeys = [];
                     }
-                    
+
                     let unreadCount = 0;
                     const notifContent = document.getElementById('notifListContent');
                     const badge = document.getElementById('notif-badge-count');
@@ -159,12 +160,12 @@
                         // We notify if it is unread AND we haven't played a sound for this key in the current session
                         if (isUnread && !notifiedKeys.includes(key)) {
                             notifiedKeys.push(key);
-                            
+
                             // Only trigger toast/sound for items updated in the last 1 minute or if this isn't the initial session load
                             // to avoid spamming the user on page refresh.
                             let itemTime = new Date(n.updated_at);
                             let isRecent = (new Date() - itemTime) < 60000;
-                            if (isRecent || notifiedKeys.length > 1) { 
+                            if (isRecent || notifiedKeys.length > 1) {
                                 newlyUpdatedNotifs.push(n);
                                 playSound = true;
                             }
@@ -183,8 +184,8 @@
                             statusColor = '#00e5ff';
                             iconSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
                             const tableName = n.table ? n.table.name : 'Meja';
-                            
-                            switch(n.status.toLowerCase()) {
+
+                            switch (n.status.toLowerCase()) {
                                 case 'pending':
                                     title = 'Booking Meja Dibuat';
                                     description = `Booking ${tableName} pada ${formatDate(n.booking_date)} pukul ${n.start_time.substring(0, 5)} - ${n.end_time.substring(0, 5)} menunggu pembayaran.`;
@@ -211,8 +212,8 @@
                             iconSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
                             const tableName = (n.booking && n.booking.table) ? n.booking.table.name : '';
                             const tableInfo = tableName ? ` (Meja ${tableName})` : '';
-                            
-                            switch(n.status.toLowerCase()) {
+
+                            switch (n.status.toLowerCase()) {
                                 case 'pending':
                                     title = 'Pesanan F&B Dibuat';
                                     description = `Pesanan F&B${tableInfo}: ${n.items_summary} menunggu pembayaran.`;
@@ -294,7 +295,7 @@
                             let toastTitle = '';
                             let toastIcon = 'info';
                             let toastText = '';
-                            
+
                             if (n.type === 'booking') {
                                 const tableName = n.table ? n.table.name : 'Meja';
                                 if (n.status.toLowerCase() === 'booked' || n.status.toLowerCase() === 'confirmed') {
@@ -349,7 +350,7 @@
             let readKeys = [];
             try {
                 readKeys = JSON.parse(localStorage.getItem('user_read_notification_keys')) || [];
-            } catch(e) {
+            } catch (e) {
                 readKeys = [];
             }
 
@@ -362,7 +363,7 @@
 
             // Persist read states
             localStorage.setItem('user_read_notification_keys', JSON.stringify(readKeys));
-            
+
             // Clear badge
             const badge = document.getElementById('notif-badge-count');
             if (badge) {
@@ -384,7 +385,7 @@
         // Click listener for the notification bell
         const bellBtn = document.getElementById('notifBellBtn');
         if (bellBtn) {
-            bellBtn.addEventListener('click', function(e) {
+            bellBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 markAllAsRead();
             });
@@ -393,7 +394,7 @@
         // Click listener for the mark all read button
         const markAllBtn = document.getElementById('markAllReadBtn');
         if (markAllBtn) {
-            markAllBtn.addEventListener('click', function(e) {
+            markAllBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 markAllAsRead();
             });
@@ -401,7 +402,7 @@
 
         // Check every 10 seconds
         setInterval(checkUserNotifications, 10000);
-        
+
         // Initial check
         checkUserNotifications();
     });

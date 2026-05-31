@@ -356,7 +356,7 @@
                                             </div>
                                         </div>
                                         <div class="preview-details">
-                                            <span id="viewType">{{ strtoupper($table->type) }}</span>
+                                            <span id="viewType">{{ strtoupper($table->type === 'regular' ? 'standar' : $table->type) }}</span>
                                             <span>|</span>
                                             <span id="viewCap">{{ $table->capacity }} ORANG</span>
                                         </div>
@@ -391,13 +391,7 @@
                                         <label class="form-label">Nama / Nomor Meja</label>
                                         <input type="text" name="name" id="inpName" class="form-input" value="{{ $table->name }}" required>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Tipe Meja</label>
-                                        <select name="type" id="inpType" class="form-input">
-                                            <option value="regular" {{ $table->type == 'regular' ? 'selected' : '' }}>Standar / Regular</option>
-                                            <option value="vip" {{ $table->type == 'vip' ? 'selected' : '' }}>VIP Exclusive</option>
-                                        </select>
-                                    </div>
+                                    <input type="hidden" name="type" id="inpType" value="{{ $table->type }}">
                                 </div>
 
                                 <div class="form-row">
