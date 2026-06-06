@@ -306,17 +306,24 @@ body {
     font-size: 0.8rem;
     font-weight: 700;
     color: #0a0a0f;
+    flex-shrink: 0;
 }
 
 .adm-user-name {
     font-size: 0.82rem;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.8);
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
 }
 
 .adm-user-badge .badge-chevron {
     color: rgba(255, 255, 255, 0.8);
     transition: transform 0.3s ease;
+    flex-shrink: 0;
 }
 
 /* ═══════════════════════════════ UI COMPONENTS ═══════════════════════════════ */
@@ -712,7 +719,9 @@ body {
 }
 
 /* Hide mobile menu button by default on desktop */
-.mobile-menu-btn {
-    display: none;
+@media (min-width: 769px) {
+    .mobile-menu-btn {
+        display: none;
+    }
 }
 
