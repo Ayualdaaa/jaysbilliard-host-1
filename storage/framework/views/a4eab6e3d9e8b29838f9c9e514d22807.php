@@ -1,9 +1,7 @@
-@extends('layouts.dashboard')
+<?php $__env->startSection('title', 'Konfirmasi Pembayaran Makanan & Minuman'); ?>
 
-@section('title', 'Konfirmasi Pembayaran Makanan & Minuman')
-
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/css_page/konfirmasi_pembayaran.css') }}">
+<?php $__env->startPush('styles'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('css/css_page/konfirmasi_pembayaran.css')); ?>">
     <style>
         .antarkan-title {
             font-size: 0.85rem;
@@ -113,9 +111,9 @@
             }
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="konfirmasi-wrapper">
     <div class="summary-container">
         <h3 class="summary-title">Ringkasan Pemesanan</h3>
@@ -242,7 +240,7 @@
             </div>
 
             <div class="konfirmasi-footer" style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 24px;">
-                <a href="{{ route('user.fnb') }}" class="cancel-link" id="cancel-btn" style="font-size: 1rem; font-weight: 700; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">Cancel</a>
+                <a href="<?php echo e(route('user.fnb')); ?>" class="cancel-link" id="cancel-btn" style="font-size: 1rem; font-weight: 700; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">Cancel</a>
                 <button class="pay-btn" id="main-pay-btn" style="padding: 16px 32px; font-size: 1.1rem; font-weight: 900; border-radius: 14px; text-transform: none;">Bayar QRIS via Midtrans</button>
             </div>
         </div>
@@ -276,14 +274,14 @@
         </p>
 
         <div class="success-actions">
-            <a href="{{ route('user.fnb') }}" class="btn-kembali">Kembali</a>
+            <a href="<?php echo e(route('user.fnb')); ?>" class="btn-kembali">Kembali</a>
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
-<script src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+<?php $__env->startPush('scripts'); ?>
+<script src="<?php echo e(config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js'); ?>" data-client-key="<?php echo e(config('services.midtrans.client_key')); ?>"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const methodOptions = document.querySelectorAll('.method-option');
@@ -417,12 +415,12 @@
 
             setPayLoading(true);
 
-            fetch('{{ route("user.fnb.checkout") }}', {
+            fetch('<?php echo e(route("user.fnb.checkout")); ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
                 },
                 body: JSON.stringify({
                     table_id: orderData.tableId || null,
@@ -454,11 +452,11 @@
                         document.getElementById('final-method-name').innerText = paymentMethod;
                         
                         // Notify backend to reduce stock (since webhooks don't work on localhost)
-                        fetch('{{ route("user.fnb.success") }}', {
+                        fetch('<?php echo e(route("user.fnb.success")); ?>', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
                             },
                             body: JSON.stringify({ order_id: data.order_id })
                         })
@@ -500,7 +498,7 @@
             const historyData = JSON.parse(localStorage.getItem('billiard_history') || '[]');
             const newEntry = {
                 id: 'FNB-' + Math.floor(Math.random() * 1000),
-                customer_name: '{{ Auth::user()->name }}',
+                customer_name: '<?php echo e(Auth::user()->name); ?>',
                 tables: orderData.tableName || 'Takeaway',
                 date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
                 time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
@@ -568,4 +566,6 @@
         setInterval(updateTimer, 1000);
     });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.dashboard', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\jaysbilliard-main\resources\views/dashboard_user/fnb_konfirmasi.blade.php ENDPATH**/ ?>

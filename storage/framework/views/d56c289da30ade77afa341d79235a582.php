@@ -1,21 +1,19 @@
-@extends('layouts.dashboard')
+<?php $__env->startSection('title', "Konfirmasi Pembayaran — Jay's Billiard"); ?>
 
-@section('title', "Konfirmasi Pembayaran — Jay's Billiard")
+<?php $__env->startPush('styles'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('css/css_page/konfirmasi_pembayaran.css')); ?>">
+<?php $__env->stopPush(); ?>
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/css_page/konfirmasi_pembayaran.css') }}">
-@endpush
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="konfirmasi-wrapper">
-        {{-- LEFT COLUMN: ORDER SUMMARY --}}
+        
         <div class="summary-container">
             <h3 class="summary-title">Ringkasan Pemesanan</h3>
 
             <div id="konfirmasi-tables-container" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
-                {{-- Populated by JS --}}
+                
                 <div class="table-info-card">
-                    <img src="{{ asset('images/hero-bg.png') }}" alt="Meja" class="table-img" id="konfirmasi-img">
+                    <img src="<?php echo e(asset('images/hero-bg.png')); ?>" alt="Meja" class="table-img" id="konfirmasi-img">
                     <div class="table-text">
                         <div class="table-name" id="konfirmasi-name">Pilih Meja <span class="table-capacity" id="konfirmasi-ppl">0 Orang</span></div>
                         <div class="table-type" id="konfirmasi-type">Standar</div>
@@ -59,24 +57,24 @@
             </div>
 
             <div class="payment-details-section" style="margin-top: 30px;">
-                <div class="detail-section-title" id="dynamic-payment-title" style="font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">QRIS VIA MIDTRANS</div>
+                <div class="detail-section-title" style="font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">QRIS VIA MIDTRANS</div>
                 <div class="detail-section-content" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; text-align: left; display: flex; flex-direction: column; gap: 15px; min-height: auto;">
                     <div style="display: flex; gap: 15px; align-items: flex-start;">
-                        <div id="dynamic-payment-icon-box" style="width: 44px; height: 44px; background: #00aaff; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span id="dynamic-payment-icon-text" style="color: #fff; font-weight: 900; font-size: 0.9rem;">QR</span>
+                        <div style="width: 44px; height: 44px; background: #00aaff; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <span style="color: #fff; font-weight: 900; font-size: 0.9rem;">QR</span>
                         </div>
                         <div>
-                            <div id="dynamic-payment-name" style="color: #fff; font-weight: 800; font-size: 0.95rem; margin-bottom: 5px;">QRIS Dinamis</div>
-                            <div id="dynamic-payment-desc" style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.5;">Snap Midtrans akan membuka kode QRIS yang bisa dibayar lewat aplikasi bank atau e-wallet.</div>
+                            <div style="color: #fff; font-weight: 800; font-size: 0.95rem; margin-bottom: 5px;">QRIS Dinamis</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.5;">Snap Midtrans akan membuka kode QRIS yang bisa dibayar lewat aplikasi bank atau e-wallet.</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- RIGHT COLUMN: FINAL CONFIRMATION --}}
+        
         <div class="payment-main-area">
-            {{-- Countdown Timer --}}
+            
             <div class="timer-card">
                 <div class="timer-icon" style="background: rgba(0, 242, 255, 0.08); border-radius: 12px; width: 44px; height: 44px;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
@@ -103,7 +101,7 @@
                 </div>
             </div>
 
-            {{-- Confirmation Card --}}
+            
             <div class="methods-card">
                 <div class="category-header" style="margin-bottom: 24px;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
@@ -159,14 +157,14 @@
                 </div>
 
                 <div class="konfirmasi-footer" style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 24px;">
-                    <a href="{{ route('user.meja') }}" class="cancel-link" style="font-size: 1rem; font-weight: 700; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">Cancel</a>
+                    <a href="<?php echo e(route('user.meja')); ?>" class="cancel-link" style="font-size: 1rem; font-weight: 700; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">Cancel</a>
                     <button class="pay-btn" id="main-pay-btn" style="padding: 16px 32px; font-size: 1.1rem; font-weight: 900; border-radius: 14px; text-transform: none;">Bayar QRIS via Midtrans</button>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- PAYMENT SUCCESS MODAL --}}
+    
     <div class="success-overlay" id="success-overlay">
         <div class="success-modal">
             <div class="success-icon-wrap">
@@ -194,15 +192,15 @@
             </p>
 
             <div class="success-actions">
-                <a href="{{ route('user.meja') }}" class="btn-kembali">Kembali</a>
+                <a href="<?php echo e(route('user.meja')); ?>" class="btn-kembali">Kembali</a>
                 <button class="btn-download">Download Struk</button>
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
-    <script src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+<?php $__env->startPush('scripts'); ?>
+    <script src="<?php echo e(config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js'); ?>" data-client-key="<?php echo e(config('services.midtrans.client_key')); ?>"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -216,36 +214,12 @@
                     this.classList.add('selected');
                     
                     const methodName = this.querySelector('.option-name').innerText;
-                    const dynTitle = document.getElementById('dynamic-payment-title');
-                    const dynIconBox = document.getElementById('dynamic-payment-icon-box');
-                    const dynIconText = document.getElementById('dynamic-payment-icon-text');
-                    const dynName = document.getElementById('dynamic-payment-name');
-                    const dynDesc = document.getElementById('dynamic-payment-desc');
-
                     if (methodName === 'QRIS') {
                         mainPayBtn.innerText = 'Bayar QRIS via Midtrans';
-                        dynTitle.innerText = 'QRIS VIA MIDTRANS';
-                        dynIconBox.style.background = '#00aaff';
-                        dynIconText.innerText = 'QR';
-                        dynIconText.style.fontSize = '0.9rem';
-                        dynName.innerText = 'QRIS Dinamis';
-                        dynDesc.innerText = 'Snap Midtrans akan membuka kode QRIS yang bisa dibayar lewat aplikasi bank atau e-wallet.';
                     } else if (methodName === 'DANA') {
                         mainPayBtn.innerText = 'Bayar DANA via Midtrans';
-                        dynTitle.innerText = 'DANA VIA MIDTRANS';
-                        dynIconBox.style.background = '#118ee0';
-                        dynIconText.innerText = 'DANA';
-                        dynIconText.style.fontSize = '0.65rem';
-                        dynName.innerText = 'DANA';
-                        dynDesc.innerText = 'Pembayaran akan diarahkan ke aplikasi DANA. Pastikan saldo Anda mencukupi.';
                     } else if (methodName === 'GoPay') {
                         mainPayBtn.innerText = 'Bayar GoPay via Midtrans';
-                        dynTitle.innerText = 'GOPAY VIA MIDTRANS';
-                        dynIconBox.style.background = '#00c853';
-                        dynIconText.innerText = 'GP';
-                        dynIconText.style.fontSize = '0.85rem';
-                        dynName.innerText = 'GoPay';
-                        dynDesc.innerText = 'Buka aplikasi Gojek untuk memindai kode QR, atau selesaikan pembayaran lewat deeplink.';
                     } else {
                         mainPayBtn.innerText = 'Bayar via Midtrans';
                     }
@@ -303,13 +277,13 @@
 
                 const payload = {
                     table_ids: orderData.tables.map(t => t.id),
-                    customer_name: '{{ Auth::user()->name }}',
-                    phone: '{{ Auth::user()->phone ?? "" }}',
+                    customer_name: '<?php echo e(Auth::user()->name); ?>',
+                    phone: '<?php echo e(Auth::user()->phone ?? ""); ?>',
                     booking_date: formattedDate,
                     start_time: orderData.time.split(' - ')[0],
                     end_time: orderData.time.split(' - ')[1],
                     total_price: cleanTotal,
-                    _token: '{{ csrf_token() }}'
+                    _token: '<?php echo e(csrf_token()); ?>'
                 };
 
                 mainPayBtn.disabled = true;
@@ -317,11 +291,11 @@
 
                 console.log('Sending payload to server:', payload);
 
-                fetch('{{ route("booking.store") }}', {
+                fetch('<?php echo e(route("booking.store")); ?>', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify(payload)
@@ -338,9 +312,9 @@
                         window.snap.pay(data.snap_token, {
                             onSuccess: function(result) {
                                 console.log('Payment success:', result);
-                                fetch('{{ route("booking.success") }}', {
+                                fetch('<?php echo e(route("booking.success")); ?>', {
                                     method: 'POST',
-                                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
                                     body: JSON.stringify({ order_id: result.order_id })
                                 });
                                 saveLocalHistory(result.order_id, orderData, result.payment_type || 'Midtrans');
@@ -379,7 +353,7 @@
                 const historyData = JSON.parse(localStorage.getItem('billiard_history') || '[]');
                 const newEntry = {
                     id: orderId,
-                    customer_name: '{{ Auth::user()->name }}',
+                    customer_name: '<?php echo e(Auth::user()->name); ?>',
                     tables: orderData.tables.map(t => t.name).join(', '),
                     date: orderData.date,
                     time: orderData.time.split(' - ')[0],
@@ -469,4 +443,6 @@
             setInterval(updateTimer, 1000);
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.dashboard', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\jaysbilliard-main\resources\views/dashboard_user/konfirmasi_pembayaran.blade.php ENDPATH**/ ?>
