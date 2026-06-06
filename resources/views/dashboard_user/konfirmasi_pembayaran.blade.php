@@ -105,9 +105,20 @@
 
             {{-- Confirmation Card --}}
             <div class="methods-card">
-                <div class="category-header" style="margin-bottom: 24px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                    <span style="font-size: 1.1rem;">Pilih Metode Pembayaran</span>
+                <!-- Header Card Content -->
+                <div style="margin-bottom: 30px;">
+                    <div style="width: 60px; height: 60px; background: rgba(0, 242, 255, 0.08); border-radius: 18px; display: flex; align-items: center; justify-content: center; color: var(--primary-cyan); margin-bottom: 20px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    </div>
+                    <h3 style="font-size: 1.4rem; font-weight: 900; color: #fff; margin-bottom: 12px;">Pembayaran Midtrans</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                        Semua metode pembayaran diproses langsung oleh Midtrans. Pilih QRIS, DANA, atau GoPay untuk membuka alur pembayaran yang sesuai.
+                    </p>
+                </div>
+
+                <div class="category-header" style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 800;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-cyan)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    <span style="font-size: 1rem;">Pilih Metode Pembayaran</span>
                 </div>
 
                 <div class="method-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
@@ -154,12 +165,19 @@
                     </div>
                 </div>
 
-                <div class="method-info-text" style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-top: 24px; margin-bottom: 24px; text-align: left;">
-                    QRIS dan GoPay diproses lewat Midtrans Snap. DANA redirect memakai Snap-BI Direct Debit jika credential tersedia.
+                <div class="method-info-text" style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-top: 24px; margin-bottom: 30px; text-align: left;">
+                    DANA redirect memakai Snap-BI Direct Debit jika credential tersedia.
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); border-radius: 16px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">GATEWAY</span>
+                        <span style="font-size: 1rem; font-weight: 800; color: #fff;">Midtrans Snap</span>
+                    </div>
                 </div>
 
                 <div class="konfirmasi-footer" style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 24px;">
-                    <a href="{{ route('user.meja') }}" class="cancel-link" style="font-size: 1rem; font-weight: 700; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">Cancel</a>
+                    <a href="{{ route('user.meja') }}" class="cancel-link" id="cancel-btn" style="font-size: 1rem; font-weight: 700; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">Cancel</a>
                     <button class="pay-btn" id="main-pay-btn" style="padding: 16px 32px; font-size: 1.1rem; font-weight: 900; border-radius: 14px; text-transform: none;">Bayar QRIS via Midtrans</button>
                 </div>
             </div>
