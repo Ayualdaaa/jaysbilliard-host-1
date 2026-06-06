@@ -239,12 +239,17 @@ class DashboardController extends Controller
         try {
             $status = Transaction::status($orderId);
             $transactionStatus = $status->transaction_status;
+            $paymentType = $status->payment_type ?? null;
 
             if (in_array($transactionStatus, ['settlement', 'capture'])) {
                 $order = Order::with('details.menu')->where('order_id', $orderId)->first();
                 
                 if ($order && $order->status !== 'paid') {
-                    $order->update(['status' => 'paid']);
+                    $updateData = ['status' => 'paid'];
+                    if ($paymentType) {
+                        $updateData['payment_method'] = $paymentType;
+                    }
+                    $order->update($updateData);
                     
                     foreach ($order->details as $detail) {
                         $menu = $detail->menu;

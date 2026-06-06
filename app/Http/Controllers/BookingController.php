@@ -155,10 +155,15 @@ class BookingController extends Controller
         try {
             $status = Transaction::status($orderId);
             $transactionStatus = $status->transaction_status;
+            $paymentType = $status->payment_type ?? null;
 
             if (in_array($transactionStatus, ['settlement', 'capture'])) {
                 $bookingIds = explode(',', $status->custom_field1);
-                Booking::whereIn('id', $bookingIds)->update(['status' => 'booked']);
+                $updateData = ['status' => 'booked'];
+                if ($paymentType) {
+                    $updateData['payment_method'] = $paymentType;
+                }
+                Booking::whereIn('id', $bookingIds)->update($updateData);
                 return response()->json(['success' => true]);
             }
             return response()->json(['success' => false]);

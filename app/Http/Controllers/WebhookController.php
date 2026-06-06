@@ -26,19 +26,28 @@ class WebhookController extends Controller
         $transactionStatus = $notification->transaction_status;
         $orderId = $notification->order_id;
         $customField1 = $notification->custom_field1 ?? '';
+        $paymentType = $notification->payment_type ?? null;
 
-        Log::info("Midtrans Webhook: Order ID {$orderId} status is {$transactionStatus}");
+        Log::info("Midtrans Webhook: Order ID {$orderId} status is {$transactionStatus}, payment type is {$paymentType}");
 
         // Only handle table bookings (which have custom_field1 as booking IDs)
         if (strpos($orderId, 'ORDER-') === 0 && !empty($customField1)) {
             $bookingIds = explode(',', $customField1);
             
+            $updateData = [];
+            if ($paymentType) {
+                $updateData['payment_method'] = $paymentType;
+            }
+
             if (in_array($transactionStatus, ['capture', 'settlement'])) {
-                Booking::whereIn('id', $bookingIds)->update(['status' => 'booked']);
+                $updateData['status'] = 'booked';
+                Booking::whereIn('id', $bookingIds)->update($updateData);
             } elseif (in_array($transactionStatus, ['cancel', 'deny', 'expire'])) {
-                Booking::whereIn('id', $bookingIds)->update(['status' => 'cancelled']);
+                $updateData['status'] = 'cancelled';
+                Booking::whereIn('id', $bookingIds)->update($updateData);
             } elseif ($transactionStatus == 'pending') {
-                Booking::whereIn('id', $bookingIds)->update(['status' => 'pending']);
+                $updateData['status'] = 'pending';
+                Booking::whereIn('id', $bookingIds)->update($updateData);
             }
         }
         
@@ -47,7 +56,12 @@ class WebhookController extends Controller
             $order = Order::with('details.menu')->where('order_id', $orderId)->first();
             if ($order && in_array($transactionStatus, ['capture', 'settlement'])) {
                 if ($order->status !== 'paid') {
-                    $order->update(['status' => 'paid']);
+                    $updateData = ['status' => 'paid'];
+                    if ($paymentType) {
+                        $updateData['payment_method'] = $paymentType;
+                    }
+                    $order->update($updateData);
+
                     foreach ($order->details as $detail) {
                         $menu = $detail->menu;
                         if ($menu) {
@@ -62,6 +76,8 @@ class WebhookController extends Controller
                         }
                     }
                 }
+            } elseif ($order && in_array($transactionStatus, ['cancel', 'deny', 'expire'])) {
+                $order->update(['status' => 'cancelled']);
             }
         }
 

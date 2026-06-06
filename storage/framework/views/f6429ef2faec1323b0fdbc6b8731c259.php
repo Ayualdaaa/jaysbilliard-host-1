@@ -169,6 +169,22 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        <?php if(session('success')): ?>
+            Swal.fire({
+                title: 'Berhasil!',
+                text: '<?php echo e(session('success')); ?>',
+                icon: 'success',
+                background: '#111418',
+                color: '#fff',
+                confirmButtonColor: '#00e5ff',
+                customClass: {
+                    title: 'swal-title-left',
+                    htmlContainer: 'swal-text-left',
+                    confirmButton: 'btn-swal-confirm'
+                }
+            });
+        <?php endif; ?>
+
         function confirmDelete(form, tableName) {
             Swal.fire({
                 title: 'Hapus Meja',

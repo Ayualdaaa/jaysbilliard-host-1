@@ -168,6 +168,22 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        @if(session('success'))
+            Swal.fire({
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                background: '#111418',
+                color: '#fff',
+                confirmButtonColor: '#00e5ff',
+                customClass: {
+                    title: 'swal-title-left',
+                    htmlContainer: 'swal-text-left',
+                    confirmButton: 'btn-swal-confirm'
+                }
+            });
+        @endif
+
         function confirmDelete(form, tableName) {
             Swal.fire({
                 title: 'Hapus Meja',

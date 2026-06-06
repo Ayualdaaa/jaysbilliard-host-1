@@ -99,69 +99,6 @@
             color: var(--primary-cyan);
         }
 
-        .midtrans-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 32px;
-            padding: 32px;
-        }
-
-        .midtrans-card__icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            background: rgba(0, 242, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-cyan);
-            margin-bottom: 22px;
-        }
-
-        .midtrans-card__title {
-            font-size: 1.35rem;
-            font-weight: 900;
-            color: #fff;
-            margin-bottom: 10px;
-        }
-
-        .midtrans-card__text {
-            max-width: 620px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.7;
-            margin-bottom: 30px;
-        }
-
-        .midtrans-status {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 14px;
-            margin-bottom: 30px;
-        }
-
-        .midtrans-status__item {
-            background: rgba(255, 255, 255, 0.025);
-            border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 18px;
-        }
-
-        .midtrans-status__label {
-            color: var(--text-muted);
-            font-size: 0.72rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .midtrans-status__value {
-            color: #fff;
-            font-size: 0.95rem;
-            font-weight: 800;
-        }
-
         .pay-btn[disabled] {
             cursor: wait;
             opacity: 0.7;
@@ -233,33 +170,18 @@
             </div>
         </div>
 
-        <div class="midtrans-card">
-            <div class="midtrans-card__icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+        <div class="methods-card" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 60px 40px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 32px;">
+            <div style="width: 80px; height: 80px; background: rgba(0, 242, 255, 0.1); border-radius: 24px; display: flex; align-items: center; justify-content: center; color: var(--primary-cyan); margin-bottom: 30px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
-            <h3 class="midtrans-card__title">Pembayaran Midtrans</h3>
-            <p class="midtrans-card__text">
-                Semua metode pembayaran diproses langsung oleh Midtrans. Pilihan QRIS, virtual account, kartu, atau e-wallet akan tampil di popup resmi Midtrans setelah tombol bayar ditekan.
+            <h3 style="font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 12px;">Siap untuk Memesan?</h3>
+            <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 500px; line-height: 1.6; margin-bottom: 45px;">
+                Klik tombol di bawah untuk menyelesaikan pembayaran. Anda dapat memilih metode pembayaran (Transfer, QRIS, dll) di halaman berikutnya.
             </p>
 
-            <div class="midtrans-status">
-                <div class="midtrans-status__item">
-                    <div class="midtrans-status__label">Gateway</div>
-                    <div class="midtrans-status__value">Midtrans Snap</div>
-                </div>
-                <div class="midtrans-status__item">
-                    <div class="midtrans-status__label">Mode</div>
-                    <div class="midtrans-status__value"><?php echo e(config('services.midtrans.is_production') ? 'Production' : 'Sandbox'); ?></div>
-                </div>
-                <div class="midtrans-status__item">
-                    <div class="midtrans-status__label">Status</div>
-                    <div class="midtrans-status__value" id="snap-status">Menunggu pembayaran</div>
-                </div>
-            </div>
-
-            <div class="konfirmasi-footer">
-                <a href="<?php echo e(route('user.fnb')); ?>" class="cancel-link" id="cancel-btn">Cancel</a>
-                <button class="pay-btn" id="main-pay-btn">Bayar dengan Midtrans</button>
+            <div class="konfirmasi-footer" style="width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px;">
+                <button class="pay-btn" id="main-pay-btn" style="width: 100%; padding: 22px; font-size: 1.2rem; font-weight: 900; border-radius: 18px; text-transform: uppercase; letter-spacing: 1px;">Bayar Sekarang</button>
+                <a href="<?php echo e(route('user.fnb')); ?>" class="cancel-link" id="cancel-btn" style="font-size: 1rem; font-weight: 700; color: var(--text-muted); text-decoration: none; transition: color 0.2s;">Kembali ke Menu F&B</a>
             </div>
         </div>
     </div>
@@ -305,7 +227,6 @@
         const mainPayBtn = document.getElementById('main-pay-btn');
         const paymentStatusText = document.getElementById('payment-status-text');
         const paymentStatusSub = document.getElementById('payment-status-sub');
-        const snapStatus = document.getElementById('snap-status');
         const cancelBtn = document.getElementById('cancel-btn');
         const itemsList = document.getElementById('konfirmasi-items-list');
 
@@ -389,7 +310,6 @@
             }
 
             setPayLoading(true);
-            snapStatus.innerText = 'Membuka Midtrans';
 
             fetch('<?php echo e(route("user.fnb.checkout")); ?>', {
                 method: 'POST',
@@ -449,25 +369,24 @@
                         const paymentMethod = result.payment_type || 'Midtrans';
                         document.getElementById('final-method-name').innerText = paymentMethod;
                         saveFnbHistory(orderData, paymentMethod, 'pending');
-                        snapStatus.innerText = 'Menunggu pembayaran';
                         showAlert('info', 'Menunggu Pembayaran', 'Ikuti instruksi pembayaran dari Midtrans.');
                     },
                     onError: function() {
-                        snapStatus.innerText = 'Pembayaran gagal';
                         showAlert('error', 'Pembayaran Gagal', 'Silakan coba lagi atau pilih metode lain di Midtrans.');
                     },
                     onClose: function() {
-                        snapStatus.innerText = 'Popup ditutup';
+                        mainPayBtn.disabled = false;
+                        mainPayBtn.innerText = 'Bayar Sekarang';
                     }
                 });
             })
             .catch(err => {
                 console.error(err);
-                snapStatus.innerText = 'Terjadi kesalahan';
                 showAlert('error', 'Terjadi Kesalahan', err.message || 'Sistem belum bisa memproses pembayaran.');
             })
             .finally(() => {
-                setPayLoading(false);
+                // If snap popup closes immediately due to error, we might want to re-enable button
+                // But Midtrans Snap handles it inside onClose.
             });
         });
 
@@ -496,7 +415,6 @@
             mainPayBtn.disabled = true;
             mainPayBtn.style.background = '#00f2ff';
 
-            snapStatus.innerText = 'Pembayaran berhasil';
             paymentStatusText.innerHTML = 'Status Pembayaran : <span style="color: #00f2ff;">BERHASIL</span>';
             paymentStatusSub.innerText = 'Pesanan segera diproses';
             cancelBtn.style.display = 'none';

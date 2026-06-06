@@ -130,7 +130,6 @@
                                     <th>TANGGAL</th>
                                     <th>JUMLAH</th>
                                     <th>STATUS</th>
-                                    <th class="col-action">AKSI</th>
                                 </tr>
                             </thead>
                             <tbody id="transactionBody">
@@ -199,16 +198,9 @@
                                         </td>
                                         <td><span class="<?php echo e($amountClass); ?>">Rp <?php echo e(number_format($item->total_price, 0, ',', '.')); ?></span></td>
                                         <td><?php echo $statusHtml; ?></td>
-                                        <td class="col-action">
-                                            <div class="adm-action-buttons">
-                                                <button type="button" class="btn-action view" style="background: transparent; color: #ffb300;" onclick='showOrderDetails("<?php echo e(htmlspecialchars($item->customer_name, ENT_QUOTES)); ?>", "<?php echo e(\Carbon\Carbon::parse($item->booking_date)->format('d M Y')); ?>", "<?php echo e(\Carbon\Carbon::parse($item->start_time)->format('H:i')); ?>", "<?php echo e($item->table->name ?? 'N/A'); ?>", "<?php echo e($item->payment_method ?? 'QRIS'); ?>", "<?php echo e($duration); ?>", <?php echo json_encode($allDetails); ?>, "Rp <?php echo e(number_format($item->total_price, 0, ',', '.')); ?>")' title="View Transaction">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                                </button>
-                                            </div>
-                                        </td>
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                    <tr><td colspan="8" style="text-align: center; padding: 60px; color: rgba(255,255,255,0.15);">Belum ada data transaksi.</td></tr>
+                                    <tr><td colspan="7" style="text-align: center; padding: 60px; color: rgba(255,255,255,0.15);">Belum ada data transaksi.</td></tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>

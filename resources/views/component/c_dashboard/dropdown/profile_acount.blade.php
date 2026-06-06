@@ -1,6 +1,6 @@
 <div class="adm-profile-dropdown" id="profileDropdown">
     <div class="adm-profile-header">
-        <div class="adm-user-avatar adm-user-avatar--large">A</div>
+        <div class="adm-user-avatar adm-user-avatar--large">{{ strtoupper(substr(auth()->user()->name ?? 'User', 0, 1)) }}</div>
         <div class="adm-profile-user-info">
             <span class="adm-profile-name">{{ auth()->user()->name ?? 'Ayucantik' }}</span>
             <span

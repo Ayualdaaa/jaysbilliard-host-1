@@ -137,7 +137,7 @@ unset($__errorArgs, $__bag); ?>" value="<?php echo e(old('name')); ?>" placehold
                             </div>
                             <div class="adm-form-footer">
                                 <a href="<?php echo e(route('admin.meja.index')); ?>" class="btn-cancel">Cancel</a>
-                                <button type="submit" class="btn-submit">Buat Meja</button>
+                                <button type="submit" class="btn-submit">Simpan</button>
                             </div>
                         </div>
                     </div>
